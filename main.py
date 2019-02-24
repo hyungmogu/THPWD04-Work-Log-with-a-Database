@@ -30,14 +30,13 @@ import datetime
 
 from model_service import ModelService
 from view_service import ViewService
-from models import Entries
 
 class Program: # this is controller (from MVC architecture.)
-    def __init__(self, model_service=ModelService, view_service=ViewService, models=[Entries]):
+    def __init__(self, model_service=ModelService, view_service=ViewService):
         self.quit_program = False
 
         self.view_service = ViewService()
-        self.model_service = ModelService(models)
+        self.model_service = ModelService()
 
     def _clear_screen(self):
         os.system('cls')  # For Windows
@@ -163,8 +162,6 @@ class Program: # this is controller (from MVC architecture.)
                 correct = True
 
             self.view_service.clear_error_message()
-
-        output['date'] = datetime.datetime.now().strftime('%d-%m-%Y')
 
         # 2. Store / append output in csv
         self.model_service.add_entry(prompts, output)
