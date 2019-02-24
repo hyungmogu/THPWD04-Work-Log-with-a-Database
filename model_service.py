@@ -10,7 +10,7 @@ class ModelService:
 
         return output
 
-    def get_csv_data(self):
+    def get_entry(self):
         try:
             with open('work_log.csv','r') as csvFile:
                 output = csvFile.read()
@@ -19,7 +19,7 @@ class ModelService:
 
         return output
 
-    def get_csv_data_by_lines(self):
+    def get_all_entries((self):
         try:
             with open('work_log.csv','r') as csvFile:
                 output = [ x.strip() for x in csvFile.readlines()]

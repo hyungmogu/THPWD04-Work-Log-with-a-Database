@@ -50,11 +50,11 @@ class Program: # this is controller (from MVC architecture.)
         print("Thank You and Take Care")
         self.quit_program = True
 
-    def _get_csv_data(self):
-        return self.model_service.get_csv_data()
+    def _get_entry(self):
+        return self.model_service.get_entry()
 
-    def _get_csv_data_by_lines(self):
-        return self.model_service.get_csv_data_by_lines()
+    def _get_all_entries(self):
+        return self.model_service.get_all_entries(()
 
     def _file_is_empty(self, file):
         if file.tell() == 0:
@@ -298,7 +298,7 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_date_page(self):
         self.view_service.page_title = 'Search Page'
-        data = self._get_csv_data()
+        data = self._get_entry()
         exit_page = False
         items = []
 
@@ -397,7 +397,7 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_time_spent_page(self):
         self.view_service.page_title = 'Search Page'
-        data = self._get_csv_data()
+        data = self._get_entry()
         exit_page = False
         items = []
 
@@ -476,7 +476,7 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_regex_or_exact_words_page(self, search_type):
         self.view_service.page_title = 'Search Page'
-        data = self._get_csv_data_by_lines()
+        data = self._get_all_entries()
         exit_page = False
         items = []
 
