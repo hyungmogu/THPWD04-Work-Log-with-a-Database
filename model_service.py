@@ -1,5 +1,6 @@
 import csv
 import peewee as p
+import datetime
 
 from models import Entries
 
@@ -32,26 +33,22 @@ class ModelService:
         entry = {}
 
         for prompt in prompts:
-            print(prompt)
             entry[prompt['model']] = output[prompt['model']] if prompt['model'] in output else ''
 
-        Entries.create(**entry)
+        item = Entries.create(**entry)
 
-    def get_entry(self):
-        try:
-            with open('work_log.csv','r') as csvFile:
-                output = csvFile.read()
-        except IOError:
-            output = ''
+        return item
 
-        return output
+
+    def get_entries_by_date(self, date):
+        # grab all dates of that date
+        target_date_lb = datetime.datetime.strptime(date, '%Y-%m-%d')
+        target_date_ub = target_date_lb + datetime.timedelta(days=1)
+        items = Entries.select().where(Entries.date >= target_date_lb and Entries.date < target_date_ub)
+
+        return items
 
     def get_all_entries(self):
-        try:
-            with open('work_log.csv','r') as csvFile:
-                output = [ x.strip() for x in csvFile.readlines()]
-        except IOError:
-            output = []
-
-        return output
+        items = Entries.select()
+        return items
 
