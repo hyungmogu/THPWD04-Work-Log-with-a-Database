@@ -164,9 +164,9 @@ class Program: # this is controller (from MVC architecture.)
             self.view_service.clear_error_message()
 
         # 2. Store / append output in csv
-        self.model_service.add_entry(prompts, output)
+        item = self.model_service.add_entry(prompts, output)
 
-        self.run_display_page('add_page', [output])
+        self.run_display_page('add_page', [item])
 
     def _is_response_valid_search_page(self, response, menu):
         # 1. if response contains characters other than letters, return false

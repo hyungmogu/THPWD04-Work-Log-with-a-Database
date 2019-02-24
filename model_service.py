@@ -33,10 +33,11 @@ class ModelService:
         entry = {}
 
         for prompt in prompts:
-            print(prompt)
             entry[prompt['model']] = output[prompt['model']] if prompt['model'] in output else ''
 
-        Entries.create(**entry)
+        item = Entries.create(**entry)
+
+        return item
 
 
     def get_entries_by_date(self, date):
