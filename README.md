@@ -1,9 +1,10 @@
-# THPWD03 - Work Log
+# THPWD04 - Work Log with a Database
 
-This is the fourth project to team tree house's Python Web Tech Degree. Unlike Work Log from unit 3, this project uses SQLITE with Peewee ORM for the addition and the display of entries.
+This is the fourth project to team tree house's Python Web Tech Degree. Unlike Work Log from unit 3, this project uses SQLITE with Peewee ORM for storage of entries. As well, it utilizes unit test library and coverage to ensure the validity of defined methods.
 
-## Goal
-- Build a CLI (command line interface) application that logs what a person has done on a specific day using Peewee ORM and SQLITE. Additionally, refactor work log such that it covers at least 50% of code covered by tests.
+## Goals
+- Build a CLI (command line interface) application that logs what a person has done on a specific day using Peewee ORM and SQLITE.
+- Refactor and create test methods such that they cover at least 50% of code.
 
 ## Deliverables / Objectives
 1. As a fellow developer, user should find at least 50% of the code covered by tests. User would use coverage.py to validate this amount of coverage.
