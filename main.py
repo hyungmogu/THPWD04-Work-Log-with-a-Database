@@ -26,7 +26,6 @@
 import os
 import re
 import sys
-import csv
 import datetime
 
 from model_service import ModelService
@@ -54,12 +53,7 @@ class Program: # this is controller (from MVC architecture.)
         return self.model_service.get_entry()
 
     def _get_all_entries(self):
-        return self.model_service.get_all_entries(()
-
-    def _file_is_empty(self, file):
-        if file.tell() == 0:
-            return True
-        return False
+        return self.model_service.get_all_entries()
 
     def _sanitize_response(self, response):
         # for each reserved character, replace it with \Character or \s if it's a space
@@ -175,13 +169,7 @@ class Program: # this is controller (from MVC architecture.)
         output['date'] = datetime.datetime.now().strftime('%d-%m-%Y')
 
         # 2. Store / append output in csv
-        with open("work_log.csv", "a" ) as csvFile:
-            csvHeaders = ['date'] + [x['model'] for x in prompts]
-            csvWriter = csv.DictWriter(csvFile, fieldnames=csvHeaders)
-
-            if self._file_is_empty(csvFile):
-                csvWriter.writeheader()
-            csvWriter.writerow(output)
+        self.model_service.add_entry(prompts, output)
 
         self.run_display_page('add_page', [output])
 
