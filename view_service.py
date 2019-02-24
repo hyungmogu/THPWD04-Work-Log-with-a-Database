@@ -84,10 +84,10 @@ class ViewService:
         self._get_header()
         item = items[index]
 
-        print("Task Name: {}".format(item['task_name']))
-        print("Created Date: {}".format(item['date']))
-        print("Time Spent: {}".format(item['time_amt']))
-        print("Notes: {}\n".format(item['notes']))
+        print("Task Name: {}".format(item.task_name))
+        print("Created Date: {}".format(item.date.strftime('%Y-%m-%d')))
+        print("Time Spent: {}".format(item.time_amt))
+        print("Notes: {}\n".format(item.notes))
 
         if path == 'search_page':
             print("Displaying Item ({} of {})\n".format(index+1, len(items)))

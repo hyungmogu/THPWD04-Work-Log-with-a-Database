@@ -1,5 +1,7 @@
 import csv
 import peewee as p
+import datetime
+import re
 
 from models import Entries
 
@@ -32,26 +34,53 @@ class ModelService:
         entry = {}
 
         for prompt in prompts:
-            print(prompt)
             entry[prompt['model']] = output[prompt['model']] if prompt['model'] in output else ''
 
-        Entries.create(**entry)
+        item = Entries.create(**entry)
 
-    def get_entry(self):
-        try:
-            with open('work_log.csv','r') as csvFile:
-                output = csvFile.read()
-        except IOError:
-            output = ''
+        return item
+
+
+    def get_entries_by_date(self, date):
+        # grab all dates of that date
+        target_date_lb = datetime.datetime.strptime(date, '%Y-%m-%d')
+        target_date_ub = target_date_lb + datetime.timedelta(days=1)
+        items = Entries.select().where(Entries.date >= target_date_lb, Entries.date < target_date_ub)
+
+        return items
+
+    def get_entries_by_time_amt(self, time_amt):
+        items = Entries.select().where(Entries.time_amt == int(time_amt))
+        return items
+
+    def get_entries_by_regex(self, regex):
+        output = []
+
+        items = Entries.select()
+
+        if len(items) == 0:
+            return output
+
+        for item in items:
+            result_1 = re.search(r'{}'.format(regex), item.notes)
+            result_2 = re.search(r'{}'.format(regex), item.task_name)
+
+            if result_1:
+                output.append(item)
+
+            if result_2:
+                output.append(item)
 
         return output
+
+    def get_entries_by_exact_words(self, words):
+        items_1 = Entries.select().where(Entries.task_name.contains(words))
+        items_2 = Entries.select().where(Entries.notes.contains(words))
+        items = items_1 + items_2
+
+        return items
 
     def get_all_entries(self):
-        try:
-            with open('work_log.csv','r') as csvFile:
-                output = [ x.strip() for x in csvFile.readlines()]
-        except IOError:
-            output = []
-
-        return output
+        items = Entries.select()
+        return items
 

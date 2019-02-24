@@ -164,9 +164,9 @@ class Program: # this is controller (from MVC architecture.)
             self.view_service.clear_error_message()
 
         # 2. Store / append output in csv
-        self.model_service.add_entry(prompts, output)
+        item = self.model_service.add_entry(prompts, output)
 
-        self.run_display_page('add_page', [output])
+        self.run_display_page('add_page', [item])
 
     def _is_response_valid_search_page(self, response, menu):
         # 1. if response contains characters other than letters, return false
@@ -242,10 +242,10 @@ class Program: # this is controller (from MVC architecture.)
 
         elif message_type == 'not_valid_response':
             # 1. check if correct format has been registered
-            if not response or len(response) == 0 or re.match(r'\d{2}\-\d{2}\-\d{4}', response.strip()) is None:
+            if not response or len(response) == 0 or re.match(r'\d{4}\-\d{2}\-\d{2}', response.strip()) is None:
                 output = 'Please enter item in correct format (dd-mm-yyyy) or value (R)'
             else:
-                day,month,year = response.split('-')
+                year,month,day = response.split('-')
                 try:
                     datetime.datetime(int(year),int(month),int(day))
                 except ValueError as e:
@@ -267,8 +267,8 @@ class Program: # this is controller (from MVC architecture.)
                 return False
             return True
         #3. if response is in date format, then check to see if it has a correct value
-        elif re.match(r'\d{2}\-\d{2}\-\d{4}', response) is not None:
-            day,month,year = response.split('-')
+        elif re.match(r'\d{4}\-\d{2}\-\d{2}', response) is not None:
+            year,month,day = response.split('-')
             try:
                 datetime.datetime(int(year),int(month),int(day))
             except ValueError:
@@ -281,11 +281,10 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_date_page(self):
         self.view_service.page_title = 'Search Page'
-        data = self._get_entry()
         exit_page = False
         items = []
 
-        if len(data.strip()) == 0:
+        if len(self.model_service.get_all_entries()) == 0:
             self.view_service.error_message = self._get_error_message_search_by_date_page('', 'empty_data')
 
         while not exit_page:
@@ -313,19 +312,12 @@ class Program: # this is controller (from MVC architecture.)
                 continue
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(data.strip()) == 0:
+            if len(self.model_service.get_all_entries()) == 0:
                 self.view_service.error_message = self._get_error_message_search_by_date_page('', 'empty_data')
                 continue
 
             # 7. fetch result
-            results = re.finditer(r'''
-                ^(?P<date>{})\,
-                (?P<task_name>.*)\,
-                (?P<time_amt>\d+)\,
-                (?P<notes>.*)\r$
-            '''.format(response), data, re.X|re.M)
-
-            items = [x.groupdict() for x in results]
+            items = self.model_service.get_entries_by_date(response)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
@@ -380,11 +372,10 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_time_spent_page(self):
         self.view_service.page_title = 'Search Page'
-        data = self._get_entry()
         exit_page = False
         items = []
 
-        if len(data.strip()) == 0:
+        if len(self.model_service.get_all_entries()) == 0:
             self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
 
         while not exit_page:
@@ -411,19 +402,12 @@ class Program: # this is controller (from MVC architecture.)
                 continue
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(data.strip()) == 0:
+            if len(self.model_service.get_all_entries()) == 0:
                 self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
                 continue
 
             # 7. fetch all results
-            results = re.finditer(r'''
-                    ^(?P<date>\d{{2}}\-\d{{2}}\-\d{{4}})\,
-                    (?P<task_name>.*)\,
-                    (?P<time_amt>{})\,
-                    (?P<notes>.*)$
-                '''.format(response), data, re.X|re.M)
-
-            items = [x.groupdict() for x in results]
+            items = self.model_service.get_entries_by_time_amt(response)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
@@ -459,11 +443,10 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_regex_or_exact_words_page(self, search_type):
         self.view_service.page_title = 'Search Page'
-        data = self._get_all_entries()
         exit_page = False
         items = []
 
-        if len(data) == 0:
+        if len(self.model_service.get_all_entries()) == 0:
             self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('', 'empty_data')
 
         while not exit_page:
@@ -491,7 +474,7 @@ class Program: # this is controller (from MVC architecture.)
                 continue
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(data) == 0:
+            if len(self.model_service.get_all_entries()) == 0:
                 self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('', 'empty_data')
                 continue
 
@@ -500,27 +483,10 @@ class Program: # this is controller (from MVC architecture.)
                 response = self._sanitize_response(response)
 
             # 7. Grab all results by exact string in task name or notes
-            for entry in data:
-                result_1 = re.search(r'''
-                    ^(?P<date>\d{{2}}\-\d{{2}}\-\d{{4}})\,
-                    (?P<task_name>{})?\,
-                    (?P<time_amt>\d+)\,
-                    (?P<notes>.*)?$
-                '''.format(response), entry, re.X|re.M)
-
-                result_2 = re.search(r'''
-                    ^(?P<date>\d{{2}}\-\d{{2}}\-\d{{4}})\,
-                    (?P<task_name>.*)?\,
-                    (?P<time_amt>\d+)\,
-                    (?P<notes>{})?$
-                '''.format(response), entry, re.X|re.M)
-
-                if result_1:
-                    items.append(result_1.groupdict())
-                    continue
-
-                if result_2:
-                    items.append(result_2.groupdict())
+            if search_type == 'regex':
+                items = self.model_service.get_entries_by_regex (response)
+            elif search_type == 'exact_words':
+                items = self.model_service.get_entries_by_exact_words (response)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
