@@ -1,8 +1,17 @@
 import csv
+import peewee as p
 
 class ModelService:
     menu_main = ["Add Entry", "Search Existing Entry", "Quit"]
     menu_search_page = ["Find By Date", "Find by Time Spent", "Find by Exact Search", "Find by Pattern", "Return to Main"]
+
+    def __init__(self, models):
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+		self.db.create_tables(models, safe=True)
+
+    def __delete__(self):
+        self.db.close()
 
     def get_menu(self, name):
         output = []

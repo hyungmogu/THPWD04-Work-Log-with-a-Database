@@ -30,16 +30,14 @@ import datetime
 
 from model_service import ModelService
 from view_service import ViewService
-
-# TODO: Generalize is_response_valid method
-# TODO: Move prompt to object [maybe]
+from models import Entries
 
 class Program: # this is controller (from MVC architecture.)
-    def __init__(self, model_service=ModelService, view_service=ViewService):
+    def __init__(self, model_service=ModelService, view_service=ViewService, models=[Entries]):
         self.quit_program = False
 
         self.view_service = ViewService()
-        self.model_service = ModelService()
+        self.model_service = ModelService(models)
 
     def _clear_screen(self):
         os.system('cls')  # For Windows
