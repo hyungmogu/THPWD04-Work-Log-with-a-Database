@@ -1,14 +1,16 @@
 import csv
 import peewee as p
 
+from models import Entries
+
 class ModelService:
     menu_main = ["Add Entry", "Search Existing Entry", "Quit"]
     menu_search_page = ["Find By Date", "Find by Time Spent", "Find by Exact Search", "Find by Pattern", "Return to Main"]
 
-    def __init__(self, models):
+    def __init__(self, Entries=Entries):
         self.db = p.SqliteDatabase('workLog.db')
         self.db.connect()
-		self.db.create_tables(models, safe=True)
+        self.db.create_tables([Entries], safe=True)
 
     def __delete__(self):
         self.db.close()
@@ -27,13 +29,13 @@ class ModelService:
         return False
 
     def add_entry(self, prompts, output):
-        with open("work_log.csv", "a" ) as csvFile:
-            csvHeaders = ['date'] + [x['model'] for x in prompts]
-            csvWriter = csv.DictWriter(csvFile, fieldnames=csvHeaders)
+        entry = {}
 
-            if self._file_is_empty(csvFile):
-                csvWriter.writeheader()
-            csvWriter.writerow(output)
+        for prompt in prompts:
+            print(prompt)
+            entry[prompt['model']] = output[prompt['model']] if prompt['model'] in output else ''
+
+        Entries.create(**entry)
 
     def get_entry(self):
         try:

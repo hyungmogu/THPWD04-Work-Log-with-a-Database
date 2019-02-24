@@ -4,10 +4,10 @@ import datetime
 db = p.SqliteDatabase('workLog.db')
 
 class Entries(p.Model):
-    date = DateTimeField(default=datetime.datetime.now)
-    task_name = CharField(max_length=255, unique=False)
-    time_amt = IntegerField(default=0)
-    notes = TextField()
+    date = p.DateTimeField(default=datetime.datetime.now)
+    task_name = p.CharField(max_length=255, unique=False)
+    time_amt = p.IntegerField(default=0)
+    notes = p.TextField()
 
     # tells SQLite which database it belongs to
     class Meta:
