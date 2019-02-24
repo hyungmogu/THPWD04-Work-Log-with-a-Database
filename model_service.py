@@ -48,6 +48,10 @@ class ModelService:
 
         return items
 
+    def get_entries_by_time_amt(self, time_amt):
+        items = Entries.select().where(Entries.time_amt == int(time_amt))
+        return items
+
     def get_all_entries(self):
         items = Entries.select()
         return items

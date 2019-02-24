@@ -372,11 +372,10 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_search_by_time_spent_page(self):
         self.view_service.page_title = 'Search Page'
-        data = self._get_entry()
         exit_page = False
         items = []
 
-        if len(data.strip()) == 0:
+        if len(self.model_service.get_all_entries()) == 0:
             self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
 
         while not exit_page:
@@ -403,19 +402,12 @@ class Program: # this is controller (from MVC architecture.)
                 continue
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(data.strip()) == 0:
+            if len(self.model_service.get_all_entries()) == 0:
                 self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
                 continue
 
             # 7. fetch all results
-            results = re.finditer(r'''
-                    ^(?P<date>\d{{2}}\-\d{{2}}\-\d{{4}})\,
-                    (?P<task_name>.*)\,
-                    (?P<time_amt>{})\,
-                    (?P<notes>.*)$
-                '''.format(response), data, re.X|re.M)
-
-            items = [x.groupdict() for x in results]
+            items = self.model_service.get_entries_by_time_amt(response)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
