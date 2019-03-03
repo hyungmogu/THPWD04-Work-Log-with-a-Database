@@ -578,6 +578,32 @@ class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
 
+
+class TestGetErrorMessageSearchByRegexOrExactWordsPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+
+    def test_return_error_message_if_data_is_empty(self):
+        expected = 'There are no data in database. Please return to main (R), and add an item.'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_response_is_not_valid(self):
+        expected = 'Please enter non-empty characters or value (R)'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_empty_results_are_returned(self):
+        expected = 'Retrieved result is empty.'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_results')
+
+        self.assertEqual(expected, result)
+
 # --------
 # Display Page
 # --------
