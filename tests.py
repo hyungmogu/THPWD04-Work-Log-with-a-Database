@@ -56,7 +56,6 @@ class TestGetErrorMessageMainPage(unittest.TestCase):
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
-# --------
 
 class TestIsResponseValidMainPage(unittest.TestCase):
     def setUp(self):
@@ -101,7 +100,123 @@ class TestIsResponseValidMainPage(unittest.TestCase):
 # --------
 # Add Page
 # --------
+class TestIsResponseValidAddPageTaskName(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
 
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_add_page_task_name('')
+        result2 = self.program._is_response_valid_add_page_task_name('   ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_not_empty(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_add_page_task_name('hello')
+        result2 = self.program._is_response_valid_add_page_task_name('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+class TestIsResponseValidAddPageTimeAmt(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_add_page_time_amt('')
+        result2 = self.program._is_response_valid_add_page_time_amt('   ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_false_if_is_not_non_negative_integer(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_add_page_time_amt('-10')
+        result2 = self.program._is_response_valid_add_page_time_amt('hello')
+        result3 = self.program._is_response_valid_add_page_time_amt('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_true_otherwise(self):
+        expected = True
+
+        result = self.program._is_response_valid_add_page_time_amt('60')
+        result = self.program._is_response_valid_add_page_time_amt('0')
+
+        self.assertEqual(expected, result)
+
+
+class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_error_message_if_response_is_empty(self):
+        expected = 'Please enter non-empty value'
+
+        result1 = self.program._get_error_message_add_page_task_name('')
+        result2 = self.program._get_error_message_add_page_task_name('     ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_empty_if_otherwise(self):
+        expected = ''
+
+        result1 = self.program._get_error_message_add_page_task_name('hello')
+        result2 = self.program._get_error_message_add_page_task_name('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+class TestGetErrorMessageAddPageTimeAmt(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_error_message_if_response_empty(self):
+        expected = 'Please enter non-negative integer value'
+
+        result1 = self.program._get_error_message_add_page_time_amt('')
+        result2 = self.program._get_error_message_add_page_time_amt('    ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_error_message_if_is_not_non_negative_integer(self):
+        expected = 'Please enter non-negative integer value'
+
+        result1 = self.program._get_error_message_add_page_time_amt('-10')
+        result2 = self.program._get_error_message_add_page_time_amt('hello')
+        result3 = self.program._get_error_message_add_page_time_amt('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_empty_otherwise(self):
+        expected = ''
+
+        result1 = self.program._get_error_message_add_page_time_amt('60')
+        result2 = self.program._get_error_message_add_page_time_amt('0')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
 # --------
 # Search Page
 # --------
