@@ -424,8 +424,8 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
     def test_return_error_message_if_response_not_a_date_and_not_single_character(self):
         expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
-        result1 = self.program._get_error_message_search_by_date_page('aaaa')
-        result2 = self.program._get_error_message_search_by_date_page('a a b')
+        result1 = self.program._get_error_message_search_by_date_page('aaaa','not_valid_response')
+        result2 = self.program._get_error_message_search_by_date_page('a a b','not_valid_response')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -433,9 +433,9 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
     def test_return_error_message_if_response_is_a_character_but_not_R_and_not_a_date(self):
         expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
-        result1 = self.program._get_error_message_search_by_date_page('a')
-        result2 = self.program._get_error_message_search_by_date_page('r')
-        result3 = self.program._get_error_message_search_by_date_page('*')
+        result1 = self.program._get_error_message_search_by_date_page('a','not_valid_response')
+        result2 = self.program._get_error_message_search_by_date_page('r','not_valid_response')
+        result3 = self.program._get_error_message_search_by_date_page('*','not_valid_response')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -444,9 +444,9 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
     def test_return_error_message_if_response_is_a_date_but_not_in_a_correct_format(self):
         expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
-        result1 = self.program._get_error_message_search_by_date_page('02-23-2019')
-        result2 = self.program._get_error_message_search_by_date_page('2019-02-31')
-        result3 = self.program._get_error_message_search_by_date_page('2019-13-02')
+        result1 = self.program._get_error_message_search_by_date_page('02-23-2019','not_valid_response')
+        result2 = self.program._get_error_message_search_by_date_page('2019-02-31','not_valid_response')
+        result3 = self.program._get_error_message_search_by_date_page('2019-13-02','not_valid_response')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -455,8 +455,8 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
     def test_return_empty_response_if_response_is_R_or_of_correct_date(self):
         expected = ''
 
-        result1 = self.program._get_error_message_search_by_date_page('R')
-        result2 = self.program._get_error_message_search_by_date_page('2019-12-23')
+        result1 = self.program._get_error_message_search_by_date_page('R','not_valid_response')
+        result2 = self.program._get_error_message_search_by_date_page('2019-12-23','not_valid_response')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
