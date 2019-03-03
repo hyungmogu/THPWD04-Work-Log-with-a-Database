@@ -138,12 +138,21 @@ class Program: # this is controller (from MVC architecture.)
 
         return True
 
-    def _get_error_message_add_page(self, response, prompt):
-        if prompt != 'Additional Notes' and response.strip() == '':
-            return 'Please enter non-empty value'
+    def _get_error_message_add_page_task_name(self, response):
+        output = ''
 
-        if prompt == '# of Minutes':
-            return 'Please enter integer value between 0-60'
+        if response.strip() == '':
+            output = 'Please enter non-empty value'
+
+        return output
+
+    def _get_error_message_add_page_time_amt(self, response):
+        output = ''
+
+        if response.strip() == '':
+            output = 'Please enter non-negative integer value'
+
+        return output
 
     def run_add_page(self):
         self.view_service.page_title = 'Add Entry Page'
@@ -163,11 +172,11 @@ class Program: # this is controller (from MVC architecture.)
                     response = input("> ").strip().lower()
 
                 if prompt['label'] == 'Task Name' and not self._is_response_valid_add_page_task_name(response):
-                    self.view_service.error_message = self._get_error_message_add_page(response, prompt['label'])
+                    self.view_service.error_message = self._get_error_message_add_page_task_name(response)
                     continue
 
                 if prompt['label'] == '# of Minutes' and not self._is_response_valid_add_page_time_amt(response):
-                    self.view_service.error_message = self._get_error_message_add_page(response, prompt['label'])
+                    self.view_service.error_message = self._get_error_message_add_page_time_amt(response)
                     continue
 
                 output[prompt['model']] = response
