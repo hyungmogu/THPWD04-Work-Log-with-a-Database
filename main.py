@@ -46,9 +46,6 @@ class Program: # this is controller (from MVC architecture.)
         print("Thank You and Take Care")
         self.quit_program = True
 
-    def _get_entry(self):
-        return self.model_service.get_entry()
-
     def _get_all_entries(self):
         return self.model_service.get_all_entries()
 
