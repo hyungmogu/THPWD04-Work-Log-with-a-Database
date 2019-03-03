@@ -28,4 +28,6 @@ This is the fourth project to team tree house's Python Web Tech Degree. Unlike W
 
 ## FAQ
 1. Q: How would a user know which version of python is installed as default?
-    - A: Type `python --version` in terminal
+    - A: Python version can be found by typing `python --version` in terminal. If X in `X.*.*` is 2, then python 2 is installed as default, and if it's 3, then python 3 is being used as default.
+2. Q: How to access test coverage report?
+    - A: Test coverage report for this program can be accessed here: https://hyungmogu.github.io/THPWD04-Work-Log-with-a-Database/htmlcov/
