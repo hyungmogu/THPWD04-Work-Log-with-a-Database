@@ -221,6 +221,62 @@ class TestGetErrorMessageAddPageTimeAmt(unittest.TestCase):
 # Search Page
 # --------
 
+class TestIsResponseValidSearchPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_page('', self.menu)
+        result2 = self.program._is_response_valid_search_page('    ', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_false_if_response_is_other_than_letters(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_main_page('*', self.menu)
+        result2 = self.program._is_response_valid_main_page('1', self.menu)
+        result3 = self.program._is_response_valid_main_page('ab cd', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_false_if_response_contains_more_than_one_character(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_main_page('aa', self.menu)
+        result2 = self.program._is_response_valid_main_page('abc', self.menu)
+        result3 = self.program._is_response_valid_main_page('def', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_false_if_response_is_other_than_whats_assigned_to_menu(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_main_page('z', self.menu)
+        result2 = self.program._is_response_valid_main_page('f', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_response_is_within_whats_assigned(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_main_page('a', self.menu)
+        result2 = self.program._is_response_valid_main_page('e', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+
 # --------
 # Search By Date Page
 # --------
