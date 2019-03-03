@@ -353,6 +353,60 @@ class TestGetErrorMessageSearchPage(unittest.TestCase):
 # Search By Date Page
 # --------
 
+class TestIsResponseValidSearchByDatePageEmptyData(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_date_page('', )
+        result2 = self.program._is_response_valid_search_by_date_page('    ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_false_if_response_not_a_date_and_not_single_character(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_date_page('aaaa')
+        result2 = self.program._is_response_valid_search_by_date_page('a a b')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_false_if_response_is_a_character_but_not_R_and_not_a_date(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_date_page('a')
+        result2 = self.program._is_response_valid_search_by_date_page('r')
+        result3 = self.program._is_response_valid_search_by_date_page('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_false_if_response_is_a_date_but_not_in_a_correct_format(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_date_page('02-23-2019')
+        result2 = self.program._is_response_valid_search_by_date_page('2019-02-31')
+        result3 = self.program._is_response_valid_search_by_date_page('2019-13-02')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_true_if_date_is_R_or_date_of_correct_format(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_search_by_date_page('R')
+        result2 = self.program._is_response_valid_search_by_date_page('2019-12-23')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
 # --------
 # Search By Time Page
 # --------
