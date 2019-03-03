@@ -396,11 +396,11 @@ class Program: # this is controller (from MVC architecture.)
         return output
 
 
-    def _get_error_message_search_by_time_spent_page(self, response, message_type):
+    def _get_error_message_search_by_time_spent_page(self, message_type):
         output = ''
 
         if message_type == 'empty_data':
-            output = 'CSV data is empty. Please return to main (R), and add an item.'
+            output = 'There are no data in database. Please return to main (R), and add an item.'
 
         if message_type == 'not_valid_response':
             output = 'Please enter item in correct format (non-negative integer) or value (R)'
@@ -416,7 +416,7 @@ class Program: # this is controller (from MVC architecture.)
         items = []
 
         if len(self.model_service.get_all_entries()) == 0:
-            self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
+            self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_data')
 
         while not exit_page:
             # 1. Clear screen
@@ -433,7 +433,7 @@ class Program: # this is controller (from MVC architecture.)
 
             #4. if data not empty and response typed, check and see if typed value is correct
             if not self._is_response_valid_search_by_time_page(response):
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page(response, 'not_valid_response')
+                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('not_valid_response')
                 continue
 
             # 5. if response is 'R', then return to search page
@@ -443,7 +443,7 @@ class Program: # this is controller (from MVC architecture.)
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
             if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('', 'empty_data')
+                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_data')
                 continue
 
             # 7. fetch all results
@@ -451,7 +451,7 @@ class Program: # this is controller (from MVC architecture.)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page(response, 'empty_results')
+                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_results')
                 continue
 
             exit_page = True
