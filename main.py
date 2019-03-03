@@ -208,12 +208,18 @@ class Program: # this is controller (from MVC architecture.)
         return True
 
     def _get_error_message_search_page(self, response, menu):
+        error_message = ''
+
         # 1. if menu is empty, then set menu is empty error
         if len(menu) == 0:
             error_message = "Sorry. There are no items in menu. Please exit program (Ctrl + c) and try again."
 
-        # 2. if menu has value other than what's available, set value error
-        if not len(response) == 1 or not (ord(response) >= 97 and ord(response) < 97 + len(menu)):
+        # 2 if response is empty, then return message saying to add a correct value
+        elif response.strip() == '':
+            error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
+
+        # 3. if menu has value other than what's available, set value error
+        elif not len(response) == 1 or not (ord(response) >= 97 and ord(response) < 97 + len(menu)):
             error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
 
         return error_message
