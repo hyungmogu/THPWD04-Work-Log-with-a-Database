@@ -368,25 +368,32 @@ class Program: # this is controller (from MVC architecture.)
             self.run_display_page('search_page', items)
 
     def _is_response_valid_search_by_time_page(self, response):
+        output = False
 
         #1. check if response is non-empty
         if not response or len(response) == 0:
-            return False
+            return output
 
         #2. if response is a single letter, then check to see if it has entered correct value corresponding menu
-        if len(response) == 1 and response.strip() == 'R':
-            return True
+        if len(response) > 0 and re.match(r'[^\-0-9]', response) is not None:
+
+            output = True if response.strip() == 'R' else False
+
+            return output
 
         #3. if response is in time spent, then check to see if it has a correct value
-        if len(response) > 0 and response.strip() != 'R':
+        if len(response) > 0 and re.match(r'[^\-0-9]', response) is None:
             try:
-                int(response)
-                return True
+                tempVal = int(response)
             except ValueError:
-                return False
+                return output
+
+            output = True if tempVal >= 0 else False
+
+            return output
 
         #4. for other cases, return False
-        return False
+        return output
 
 
     def _get_error_message_search_by_time_spent_page(self, response, message_type):
