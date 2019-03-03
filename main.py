@@ -132,7 +132,7 @@ class Program: # this is controller (from MVC architecture.)
         if response.strip() == '':
             return False
 
-        # 2. Retufn true if response is non-empty but has numbers
+        # 2. return false if response is non-empty but has numbers
         if re.search(r'[^0-9]', response) != None:
             return False
 
@@ -150,6 +150,8 @@ class Program: # this is controller (from MVC architecture.)
         output = ''
 
         if response.strip() == '':
+            output = 'Please enter non-negative integer value'
+        elif re.search(r'[^0-9]', response) != None:
             output = 'Please enter non-negative integer value'
 
         return output
