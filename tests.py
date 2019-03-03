@@ -444,13 +444,23 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
     def test_return_error_message_if_response_is_a_date_but_not_in_a_correct_format(self):
         expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
-        result1 = self.program._get_error_message_search_by_date_page('02-23-2019','not_valid_response')
-        result2 = self.program._get_error_message_search_by_date_page('2019-02-31','not_valid_response')
-        result3 = self.program._get_error_message_search_by_date_page('2019-13-02','not_valid_response')
+        result = self.program._get_error_message_search_by_date_page('02-23-2019','not_valid_response')
 
-        self.assertEqual(expected, result1)
-        self.assertEqual(expected, result2)
-        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_day_is_out_of_range(self):
+        expected = 'Day is out of range for month'
+
+        result = self.program._get_error_message_search_by_date_page('2019-02-31','not_valid_response')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_month_is_out_of_range(self):
+        expected = 'Month must be in 1..12'
+
+        result = self.program._get_error_message_search_by_date_page('2019-13-02','not_valid_response')
+
+        self.assertEqual(expected, result)
 
     def test_return_empty_response_if_response_is_R_or_of_correct_date(self):
         expected = ''
