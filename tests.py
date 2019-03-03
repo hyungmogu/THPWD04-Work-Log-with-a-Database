@@ -80,6 +80,17 @@ class TestIsResponseValidMainPage(unittest.TestCase):
         self.assertEqual(expected, result2)
         self.assertEqual(expected, result3)
 
+    def test_return_false_if_response_contains_more_than_one_character(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_main_page('aa', self.menu)
+        result2 = self.program._is_response_valid_main_page('abc', self.menu)
+        result3 = self.program._is_response_valid_main_page('def', self.menu)
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
     def test_return_false_if_response_is_other_than_whats_assigned_to_menu(self):
         expected = False
 
