@@ -56,7 +56,6 @@ class TestGetErrorMessageMainPage(unittest.TestCase):
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
-# --------
 
 class TestIsResponseValidMainPage(unittest.TestCase):
     def setUp(self):
@@ -101,6 +100,29 @@ class TestIsResponseValidMainPage(unittest.TestCase):
 # --------
 # Add Page
 # --------
+class TestIsResponseValidAddPageTaskName(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_add_page_task_name('')
+        result2 = self.program._is_response_valid_add_page_task_name('   ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_not_empty(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_add_page_task_name('hello')
+        result2 = self.program._is_response_valid_add_page_task_name('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
 
 # --------
 # Search Page
