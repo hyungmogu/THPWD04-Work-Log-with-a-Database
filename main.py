@@ -1,28 +1,3 @@
-'''
-    WORK LOG
-
-    REQUIREMENTS
-
-        1. [] As a user of the script, I should be prompted with a menu to choose whether to add a new entry or lookup previous entries.
-
-        2. [] As a user of the script, if I choose to enter a new work log, I should be able to provide a task name, a number of minutes spent working on it, and any additional notes I want to record.
-
-        3. [] As a user of the script, if I choose to find a previous entry, I should be presented with four options:
-
-            a. find by date
-            b. find by time spent
-            c. find by exact search
-            d. find by pattern
-
-            NOTE:
-            a) [] When finding by date, I should be presented with a list of dates with entries and be able to choose one to see entries from.
-            b) [] When finding by time spent, I should be allowed to enter the number of minutes a task took and be able to choose one to see entries from.
-            c) [] When finding by an exact string, I should be allowed to enter a string and then be presented with entries containing that string in the task name or notes.
-            d) [] When finding by a pattern, I should be allowed to enter a regular expression and then be presented with entries matching that pattern in their task name or notes.
-            e) [] When displaying the entries, the entries should be displayed in a readable format with the date, task name, time spent, and notes information.
-
-'''
-
 import os
 import re
 import sys
@@ -48,16 +23,6 @@ class Program: # this is controller (from MVC architecture.)
 
     def _get_all_entries(self):
         return self.model_service.get_all_entries()
-
-    def _sanitize_response(self, response):
-        # for each reserved character, replace it with \Character or \s if it's a space
-        reserved_chrs = ['.','^',' ', '$', '*', '+', '?', '|']
-
-        for character in reserved_chrs:
-            rgx_search = '\{}'.format(character) if character != ' ' else '\s'
-            rgx_reformat = r'\\{}'.format(character) if character != ' ' else r'\\s'
-            response = re.sub(r'{}'.format(rgx_search), rgx_reformat, response)
-        return response
 
     def _get_error_message_main_page(self, response, menu):
         error_message = ''
@@ -518,10 +483,6 @@ class Program: # this is controller (from MVC architecture.)
                 self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_data')
                 continue
 
-            # 8. Sanitize response if it has regex reserved characters (only when searching by exact words)
-            if search_type == 'exact_words':
-                response = self._sanitize_response(response)
-
             # 7. Grab all results by exact string in task name or notes
             if search_type == 'regex':
                 items = self.model_service.get_entries_by_regex (response)
@@ -537,7 +498,7 @@ class Program: # this is controller (from MVC architecture.)
 
         self.view_service.clear_error_message()
 
-        #8. bring data to display page
+        #9. bring data to display page
         if response == 'R':
             self.run_search_page()
         else:
