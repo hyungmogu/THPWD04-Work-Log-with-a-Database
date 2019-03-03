@@ -9,6 +9,8 @@ class ModelService:
     menu_main = ["Add Entry", "Search Existing Entry", "Quit"]
     menu_search_page = ["Find By Date", "Find by Time Spent", "Find by Exact Search", "Find by Pattern", "Return to Main"]
 
+    prompts_add_page = [{'label': "Task Name", 'model': 'task_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+
     def __init__(self, Entries=Entries):
         self.db = p.SqliteDatabase('workLog.db')
         self.db.connect()
@@ -24,6 +26,9 @@ class ModelService:
             output = getattr(self, 'menu_{}'.format(name))
 
         return output
+
+    def get_prompts(self):
+        return self.prompts_add_page
 
     def _file_is_empty(self, file):
         if file.tell() == 0:

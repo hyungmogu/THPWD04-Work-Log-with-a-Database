@@ -137,7 +137,7 @@ class Program: # this is controller (from MVC architecture.)
 
     def run_add_page(self):
         self.view_service.page_title = 'Add Entry Page'
-        prompts = [{'label': "Task Name", 'model': 'task_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+        prompts = self.model_service.get_prompts()
         output = {}
 
         # 1. Walk through each prompt and store value in output
