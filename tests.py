@@ -332,7 +332,7 @@ class TestGetErrorMessageSearchPage(unittest.TestCase):
         self.assertEqual(expected, result3)
 
     def test_return_error_message_if_response_is_other_than_whats_assigned_to_menu(self):
-        expected = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
+        expected = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(self.menu) - 1))
 
         result1 = self.program._get_error_message_search_page('z', self.menu)
         result2 = self.program._get_error_message_search_page('f', self.menu)
