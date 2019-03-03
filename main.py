@@ -119,11 +119,21 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
             self._quit()
 
-    def _is_response_valid_add_page(self, response, prompt):
-        if prompt != 'Additional Notes' and response.strip() == '':
+    def _is_response_valid_add_page_task_name(self,response):
+        # 1. Return false if response is empty
+        if response.strip() == '':
             return False
 
-        if prompt == '# of Minutes' and re.search(r'[^0-9]', response) != None:
+        return True
+
+    def _is_response_valid_add_page_time_amt(self, response):
+
+        # 1. Return false if response is empty
+        if response.strip() == '':
+            return False
+
+        # 2. Retufn true if response is non-empty but has numbers
+        if re.search(r'[^0-9]', response) != None:
             return False
 
         return True
@@ -152,7 +162,11 @@ class Program: # this is controller (from MVC architecture.)
                 else:
                     response = input("> ").strip().lower()
 
-                if not self._is_response_valid_add_page(response, prompt['label']):
+                if prompt['label'] == 'Task Name' and not self._is_response_valid_add_page_task_name(response):
+                    self.view_service.error_message = self._get_error_message_add_page(response, prompt['label'])
+                    continue
+
+                if prompt['label'] == '# of Minutes' and not self._is_response_valid_add_page_time_amt(response):
                     self.view_service.error_message = self._get_error_message_add_page(response, prompt['label'])
                     continue
 
