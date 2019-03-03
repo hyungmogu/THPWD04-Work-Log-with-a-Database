@@ -525,6 +525,32 @@ class TestIsResponseValidSearchByTimeSpentPage(unittest.TestCase):
         self.assertEqual(expected, result2)
         self.assertEqual(expected, result3)
 
+class TestGetErrorMessageSearchByTimeSpentPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_error_message_if_data_is_empty(self):
+        expected = 'There are no data in database. Please return to main (R), and add an item.'
+
+        result = self.program._get_error_message_search_by_time_spent_page('empty_data')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_response_is_not_valid(self):
+        expected = 'Please enter item in correct format (non-negative integer) or value (R)'
+
+        result = self.program._get_error_message_search_by_time_spent_page('not_valid_response')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_empty_results_are_returned(self):
+        expected = 'Retrieved result is empty.'
+
+        result = self.program._get_error_message_search_by_time_spent_page('empty_results')
+
+        self.assertEqual(expected, result)
+
 # --------
 # Search By Regex or Exact Words Page
 # --------
