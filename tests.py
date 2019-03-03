@@ -353,7 +353,7 @@ class TestGetErrorMessageSearchPage(unittest.TestCase):
 # Search By Date Page
 # --------
 
-class TestIsResponseValidSearchByDatePageEmptyData(unittest.TestCase):
+class TestIsResponseValidSearchByDatePage(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('search_page')
@@ -481,8 +481,6 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
 # --------
 # Search By Time Page
 # --------
-
-
 
 # --------
 # Search By Regex or Exact Words Page
