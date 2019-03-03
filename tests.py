@@ -158,6 +158,32 @@ class TestIsResponseValidAddPageTimeAmt(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+
+class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('main')
+        self.prompts = self.program.model_service.get_prompts()
+
+    def test_return_error_message_if_response_is_empty(self):
+        expected = 'Please enter non-empty value'
+
+        result1 = self.program._get_error_message_add_page_task_name('')
+        result2 = self.program._get_error_message_add_page_task_name('     ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_empty_if_otherwise(self):
+        expected = ''
+
+        result1 = self.program._get_error_message_add_page_task_name('hello')
+        result2 = self.program._get_error_message_add_page_task_name('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+
 # --------
 # Search Page
 # --------
