@@ -267,18 +267,22 @@ class Program: # this is controller (from MVC architecture.)
         output = ''
 
         if message_type == 'empty_data':
-            output = 'CSV data is empty. Please return to main (R), and add an item.'
+            output = 'There are no data in database. Please return to main (R), and add an item.'
 
         elif message_type == 'not_valid_response':
             # 1. check if correct format has been registered
-            if not response or len(response) == 0 or re.match(r'\d{4}\-\d{2}\-\d{2}', response.strip()) is None:
-                output = 'Please enter item in correct format (dd-mm-yyyy) or value (R)'
-            else:
+            if not response or len(response) == 0:
+                output = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
+            elif response and len(response) == 1:
+                output = 'Please enter item in correct format (yyyy-mm-dd) or value (R)' if response.strip() != 'R' else ''
+            elif response and re.match(r'\d{4}\-\d{2}\-\d{2}', response.strip()) is not None:
                 year,month,day = response.split('-')
                 try:
                     datetime.datetime(int(year),int(month),int(day))
                 except ValueError as e:
                     output = str(e).capitalize()
+            else:
+                output = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
         elif message_type == 'empty_results':
             output = 'Retrieved result is empty.'
