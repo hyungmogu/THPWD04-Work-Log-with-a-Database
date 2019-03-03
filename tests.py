@@ -407,6 +407,61 @@ class TestIsResponseValidSearchByDatePageEmptyData(unittest.TestCase):
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
 
+
+
+class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_error_message_if_data_is_empty(self):
+        expected = 'Tnere are no data in database. Please return to main (R), and add an item.'
+
+        result1 = self.program._get_error_message_search_by_date_page('', 'empty_data')
+        result2 = self.program._get_error_message_search_by_date_page('hello', 'empty_data')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_error_message_if_response_not_a_date_and_not_single_character(self):
+        expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
+
+        result1 = self.program._get_error_message_search_by_date_page('aaaa')
+        result2 = self.program._get_error_message_search_by_date_page('a a b')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_error_message_if_response_is_a_character_but_not_R_and_not_a_date(self):
+        expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
+
+        result1 = self.program._get_error_message_search_by_date_page('a')
+        result2 = self.program._get_error_message_search_by_date_page('r')
+        result3 = self.program._get_error_message_search_by_date_page('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_error_message_if_response_is_a_date_but_not_in_a_correct_format(self):
+        expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
+
+        result1 = self.program._get_error_message_search_by_date_page('02-23-2019')
+        result2 = self.program._get_error_message_search_by_date_page('2019-02-31')
+        result3 = self.program._get_error_message_search_by_date_page('2019-13-02')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_empty_response_if_response_is_R_or_of_correct_date(self):
+        expected = ''
+
+        result1 = self.program._get_error_message_search_by_date_page('R')
+        result2 = self.program._get_error_message_search_by_date_page('2019-12-23')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
 # --------
 # Search By Time Page
 # --------
