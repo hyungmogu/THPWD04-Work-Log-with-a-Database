@@ -469,9 +469,9 @@ class Program: # this is controller (from MVC architecture.)
             return False
         return True
 
-    def _get_error_message_search_by_regex_or_exact_words_page(self, response, error_type):
+    def _get_error_message_search_by_regex_or_exact_words_page(self, error_type):
         if error_type == 'empty_data':
-            output = 'CSV data is empty. Please return to main (R), and add an item.'
+            output = 'There are no data in database. Please return to main (R), and add an item.'
 
         if error_type == 'not_valid_response':
             output = 'Please enter non-empty characters or value (R)'
@@ -487,7 +487,7 @@ class Program: # this is controller (from MVC architecture.)
         items = []
 
         if len(self.model_service.get_all_entries()) == 0:
-            self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('', 'empty_data')
+            self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_data')
 
         while not exit_page:
 
@@ -505,7 +505,7 @@ class Program: # this is controller (from MVC architecture.)
 
             #4. if data not empty and response typed, check and see if typed value is correct
             if not self._is_response_valid_search_by_regex_or_exact_words_page(response):
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page(response, 'not_valid_response')
+                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
                 continue
 
             # 5. if response is 'R', then return to search page
@@ -515,7 +515,7 @@ class Program: # this is controller (from MVC architecture.)
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
             if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('', 'empty_data')
+                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_data')
                 continue
 
             # 8. Sanitize response if it has regex reserved characters (only when searching by exact words)
@@ -530,7 +530,7 @@ class Program: # this is controller (from MVC architecture.)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page(response, 'empty_results')
+                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_results')
                 continue
 
             exit_page = True
