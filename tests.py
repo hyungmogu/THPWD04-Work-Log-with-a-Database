@@ -482,6 +482,49 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
 # Search By Time Page
 # --------
 
+class TestIsResponseValidSearchByTimeSpentPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result = self.program._is_response_valid_search_by_time_page('')
+
+        self.assertEqual(expected, result)
+
+    def test_return_false_if_response_is_not_integer(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_time_page('false')
+        result2 = self.program._is_response_valid_search_by_time_page('hello world')
+        result3 = self.program._is_response_valid_search_by_time_page('20 12')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_false_if_response_is_not_non_negative_integer(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_time_page('-10')
+        result2 = self.program._is_response_valid_search_by_time_page('-100')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_response_is_zero_or_positive_integer(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_search_by_time_page('10')
+        result2 = self.program._is_response_valid_search_by_time_page('100')
+        result3 = self.program._is_response_valid_search_by_time_page('0')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
 # --------
 # Search By Regex or Exact Words Page
 # --------
