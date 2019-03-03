@@ -353,7 +353,7 @@ class TestGetErrorMessageSearchPage(unittest.TestCase):
 # Search By Date Page
 # --------
 
-class TestIsResponseValidSearchByDatePageEmptyData(unittest.TestCase):
+class TestIsResponseValidSearchByDatePage(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('search_page')
@@ -482,16 +482,255 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
 # Search By Time Page
 # --------
 
+class TestIsResponseValidSearchByTimeSpentPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
 
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result = self.program._is_response_valid_search_by_time_page('')
+
+        self.assertEqual(expected, result)
+
+    def test_return_false_if_response_is_not_integer(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_time_page('false')
+        result2 = self.program._is_response_valid_search_by_time_page('hello world')
+        result3 = self.program._is_response_valid_search_by_time_page('20 12')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+    def test_return_false_if_response_is_not_non_negative_integer(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_time_page('-10')
+        result2 = self.program._is_response_valid_search_by_time_page('-100')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_response_is_zero_or_positive_integer(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_search_by_time_page('10')
+        result2 = self.program._is_response_valid_search_by_time_page('100')
+        result3 = self.program._is_response_valid_search_by_time_page('0')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+
+class TestGetErrorMessageSearchByTimeSpentPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_error_message_if_data_is_empty(self):
+        expected = 'There are no data in database. Please return to main (R), and add an item.'
+
+        result = self.program._get_error_message_search_by_time_spent_page('empty_data')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_response_is_not_valid(self):
+        expected = 'Please enter item in correct format (non-negative integer) or value (R)'
+
+        result = self.program._get_error_message_search_by_time_spent_page('not_valid_response')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_empty_results_are_returned(self):
+        expected = 'Retrieved result is empty.'
+
+        result = self.program._get_error_message_search_by_time_spent_page('empty_results')
+
+        self.assertEqual(expected, result)
 
 # --------
 # Search By Regex or Exact Words Page
 # --------
 
+class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+        self.menu = self.program.model_service.get_menu('search_page')
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('')
+        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('    ')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_true_if_response_not_empty(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('hello')
+        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('*')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+
+class TestGetErrorMessageSearchByRegexOrExactWordsPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+
+    def test_return_error_message_if_data_is_empty(self):
+        expected = 'There are no data in database. Please return to main (R), and add an item.'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_response_is_not_valid(self):
+        expected = 'Please enter non-empty characters or value (R)'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_empty_results_are_returned(self):
+        expected = 'Retrieved result is empty.'
+
+        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_results')
+
+        self.assertEqual(expected, result)
+
 # --------
 # Display Page
 # --------
 
+class TestIsResponseValidDisplayPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+
+    def test_return_false_if_response_is_empty(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_display_page('', 'search_page')
+        result2 = self.program._is_response_valid_display_page('    ', 'search_page')
+        result3 = self.program._is_response_valid_display_page('', 'add_page')
+        result4 = self.program._is_response_valid_display_page('    ', 'add_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+
+    def test_return_false_if_incorrect_response_is_given_for_display_from_search_page(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_display_page('*', 'search_page')
+        result2 = self.program._is_response_valid_display_page('n', 'search_page')
+        result3 = self.program._is_response_valid_display_page('p', 'search_page')
+        result4 = self.program._is_response_valid_display_page('r', 'search_page')
+        result5 = self.program._is_response_valid_display_page('hello world', 'search_page')
+        result6 = self.program._is_response_valid_display_page('0', 'search_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+        self.assertEqual(expected, result5)
+        self.assertEqual(expected, result6)
+
+    def test_return_false_if_incorrect_response_is_given_for_display_from_add_page(self):
+        expected = False
+
+        result1 = self.program._is_response_valid_display_page('*', 'add_page')
+        result2 = self.program._is_response_valid_display_page('n', 'add_page')
+        result3 = self.program._is_response_valid_display_page('p', 'add_page')
+        result4 = self.program._is_response_valid_display_page('r', 'add_page')
+        result5 = self.program._is_response_valid_display_page('hello world', 'add_page')
+        result6 = self.program._is_response_valid_display_page('0', 'add_page')
+        result7 = self.program._is_response_valid_display_page('N', 'add_page')
+        result8 = self.program._is_response_valid_display_page('P', 'add_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+        self.assertEqual(expected, result5)
+        self.assertEqual(expected, result6)
+        self.assertEqual(expected, result7)
+        self.assertEqual(expected, result8)
+
+    def test_return_true_if_correct_response_is_given(self):
+        expected = True
+
+        result1 = self.program._is_response_valid_display_page('N', 'search_page')
+        result2 = self.program._is_response_valid_display_page('P', 'search_page')
+        result3 = self.program._is_response_valid_display_page('R', 'search_page')
+        result4 = self.program._is_response_valid_display_page('R', 'add_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+
+
+class TestGetErrorMessageDisplayPage(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+    def test_return_error_message_if_response_is_empty_for_display_from_add_page(self):
+        expected = "Please choose correct value(s) (R)"
+
+        result = self.program._get_error_message_display_page('', 'add_page')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_response_is_empty_for_display_from_search_page(self):
+        expected = "Please choose correct value(s) (N,P,R)"
+
+        result = self.program._get_error_message_display_page('', 'search_page')
+
+        self.assertEqual(expected, result)
+
+    def test_return_error_message_if_incorrect_response_is_given_for_display_from_add_page(self):
+        expected = "Please choose correct value(s) (R)"
+
+        result1 = self.program._get_error_message_display_page('*', 'add_page')
+        result2 = self.program._get_error_message_display_page('n', 'add_page')
+        result3 = self.program._get_error_message_display_page('p', 'add_page')
+        result4 = self.program._get_error_message_display_page('r', 'add_page')
+        result5 = self.program._get_error_message_display_page('hello world', 'add_page')
+        result6 = self.program._get_error_message_display_page('0', 'add_page')
+        result7 = self.program._get_error_message_display_page('N', 'add_page')
+        result8 = self.program._get_error_message_display_page('P', 'add_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+        self.assertEqual(expected, result5)
+        self.assertEqual(expected, result6)
+        self.assertEqual(expected, result7)
+        self.assertEqual(expected, result8)
+
+    def test_return_error_message_if_incorrect_response_is_given_for_display_from_search_page(self):
+        expected = "Please choose correct value(s) (N,P,R)"
+
+        result1 = self.program._get_error_message_display_page('*', 'search_page')
+        result2 = self.program._get_error_message_display_page('n', 'search_page')
+        result3 = self.program._get_error_message_display_page('p', 'search_page')
+        result4 = self.program._get_error_message_display_page('r', 'search_page')
+        result5 = self.program._get_error_message_display_page('hello world', 'search_page')
+        result6 = self.program._get_error_message_display_page('0', 'search_page')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+        self.assertEqual(expected, result3)
+        self.assertEqual(expected, result4)
+        self.assertEqual(expected, result5)
+        self.assertEqual(expected, result6)
 
 if __name__ == '__main__':
     unittest.main()
