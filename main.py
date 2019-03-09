@@ -84,7 +84,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
             self._quit()
 
-    def _is_response_valid_add_page_task_name(self,response):
+    def _is_response_valid_add_page_employee_name(self,response):
         # 1. Return false if response is empty
         if response.strip() == '':
             return False
@@ -103,7 +103,7 @@ class Program: # this is controller (from MVC architecture.)
 
         return True
 
-    def _get_error_message_add_page_task_name(self, response):
+    def _get_error_message_add_page_employee_name(self, response):
         output = ''
 
         if response.strip() == '':
@@ -138,11 +138,11 @@ class Program: # this is controller (from MVC architecture.)
                 else:
                     response = input("> ").strip().lower()
 
-                if prompt['label'] == 'Task Name' and not self._is_response_valid_add_page_task_name(response):
-                    self.view_service.error_message = self._get_error_message_add_page_task_name(response)
+                if prompt['model'] == 'employee_name' and not self._is_response_valid_add_page_employee_name(response):
+                    self.view_service.error_message = self._get_error_message_add_page_employee_name(response)
                     continue
 
-                if prompt['label'] == '# of Minutes' and not self._is_response_valid_add_page_time_amt(response):
+                if prompt['model'] == 'time_amt' and not self._is_response_valid_add_page_time_amt(response):
                     self.view_service.error_message = self._get_error_message_add_page_time_amt(response)
                     continue
 

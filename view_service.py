@@ -84,7 +84,7 @@ class ViewService:
         self._get_header()
         item = items[index]
 
-        print("Task Name: {}".format(item.task_name))
+        print("Employee Name: {}".format(item.employee_name))
         print("Created Date: {}".format(item.date.strftime('%Y-%m-%d')))
         print("Time Spent: {}".format(item.time_amt))
         print("Notes: {}\n".format(item.notes))
