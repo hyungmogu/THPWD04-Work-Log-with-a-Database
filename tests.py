@@ -273,6 +273,27 @@ class TestAddEntry(unittest.TestCase):
         self.assertEqual(expected3['notes'], result3.notes)
 
 
+class TestGetPrompts(unittest.TestCase):
+    def setUp(self):
+        self.model_service = ModelService()
+
+    def test_return_items_with_length_of_3_when_called(self):
+        expected = 3
+
+        result = len(self.model_service.get_prompts())
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_items_in_list_when_called(self):
+        expected = [{'label': "Employee Name", 'model': 'employee_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+
+        result = self.model_service.get_prompts()
+
+        for index, item in enumerate(result):
+            self.assertEqual(item['label'], expected[index]['label'])
+            self.assertEqual(item['model'], expected[index]['model'])
+
+
 # --------
 # Main Page
 # --------
