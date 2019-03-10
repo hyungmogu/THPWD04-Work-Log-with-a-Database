@@ -62,34 +62,98 @@ class Program: # this is controller (from MVC architecture.)
         # 4. otherwise, return true
         return True
 
-    def run_main_page(self):
-        self.view_service.page_title = 'Main Page'
-        menu = self.model_service.get_menu('main')
+    def _is_response_valid_search_page(self, response, menu):
+        # 1. if response contains characters other than letters, return false
+        if len(re.findall(r"[^a-zA-Z]", response)) > 0:
+            return False
+
+        # 2. if response contains characters of length greater than 1 or 0, then return false
+        if len(response) > 1 or len(response) == 0:
+            return False
+
+        # 3. otherwise, return true
+        return True
+
+    def _get_error_message_search_page(self, response, menu):
+        error_message = ''
+
+        # 1. if menu is empty, then set menu is empty error
+        if len(menu) == 0:
+            error_message = "Sorry. There are no items in menu. Please exit program (Ctrl + c) and try again."
+
+        # 2 if response is empty, then return message saying to add a correct value
+        elif response.strip() == '':
+            error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
+
+        # 3. if menu has value other than what's available, set value error
+        elif not len(response) == 1 or not (ord(response) >= 97 and ord(response) < 97 + len(menu)):
+            error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
+
+        return error_message
+
+    def _get_page_title(self, page_type):
+        output = ''
+
+        if page_type == 'main':
+            output = 'Main Page'
+        elif page_type == 'search_page':
+            output = 'Search Page'
+
+        return output
+
+    def run_menu_page(self, page_type):
+        self.view_service.page_title = self._get_page_title(page_type)
+        menu = self.model_service.get_menu(page_type)
         exit_page = False
 
         while not exit_page:
             self._clear_screen()
-            self.view_service.get_main_page(menu)
+
+            if page_type == 'main':
+                self.view_service.get_main_page(menu)
+            elif page_type == 'search_page':
+                self.view_service.get_search_page(menu)
 
             response = self._get_response()
 
-            if not self._is_response_valid_main_page(response, menu):
+            if page_type == 'main' and not self._is_response_valid_main_page(response, menu):
                 self.view_service.error_message = self._get_error_message_main_page(response, menu)
+                continue
+            elif page_type == 'search_page' and not self._is_response_valid_search_page(response, menu):
+                self.view_service.error_message = self._get_error_message_search_page(response, menu)
                 continue
 
             exit_page = True
 
         self.view_service.clear_error_message()
 
-        if response == 'a':
-            self.run_add_page()
+        if page_type == 'main':
+            if response == 'a':
+                self.run_add_page()
 
-        elif response == 'b':
-            self.run_search_page()
+            elif response == 'b':
+                self.run_menu_page('search_page')
 
-        else:
-            self._clear_screen()
-            self._quit()
+            else:
+                self._clear_screen()
+                self._quit()
+
+        elif page_type == 'search_page':
+            if response == 'a':
+                self.run_search_by_search_term_page('employee_name')
+
+            elif response == 'b':
+                self.run_search_by_date_page()
+
+            elif response == 'c':
+                self.run_search_by_time_spent_page()
+
+            elif response == 'd':
+                self.run_search_by_search_term_page('employee_name_and_notes')
+
+            elif response == 'e':
+                self._clear_screen()
+                self.run_menu_page('main')
 
     def _is_response_valid_add_page_employee_name(self,response):
         # 1. Return false if response is empty
@@ -159,71 +223,6 @@ class Program: # this is controller (from MVC architecture.)
         item = self.model_service.add_entry(prompts, output)
 
         self.run_display_page('add_page', [item])
-
-    def _is_response_valid_search_page(self, response, menu):
-        # 1. if response contains characters other than letters, return false
-        if len(re.findall(r"[^a-zA-Z]", response)) > 0:
-            return False
-
-        # 2. if response contains characters of length greater than 1 or 0, then return false
-        if len(response) > 1 or len(response) == 0:
-            return False
-
-        # 3. otherwise, return true
-        return True
-
-    def _get_error_message_search_page(self, response, menu):
-        error_message = ''
-
-        # 1. if menu is empty, then set menu is empty error
-        if len(menu) == 0:
-            error_message = "Sorry. There are no items in menu. Please exit program (Ctrl + c) and try again."
-
-        # 2 if response is empty, then return message saying to add a correct value
-        elif response.strip() == '':
-            error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
-
-        # 3. if menu has value other than what's available, set value error
-        elif not len(response) == 1 or not (ord(response) >= 97 and ord(response) < 97 + len(menu)):
-            error_message = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(menu) - 1))
-
-        return error_message
-
-    def run_search_page(self):
-        self.view_service.page_title = 'Search Page'
-
-        exit_page = False
-        menu = self.model_service.get_menu('search_page')
-
-        while not exit_page:
-            self._clear_screen()
-            self.view_service.get_search_page(menu)
-
-            response = self._get_response()
-
-            if not self._is_response_valid_search_page(response, menu):
-                self.view_service.error_message = self._get_error_message_search_page(response, menu)
-                continue
-
-            exit_page = True
-
-        self.view_service.clear_error_message()
-
-        if response == 'a':
-            self.run_search_by_search_term_page('employee_name')
-
-        elif response == 'b':
-            self.run_search_by_date_page()
-
-        elif response == 'c':
-            self.run_search_by_time_spent_page()
-
-        elif response == 'd':
-            self.run_search_by_search_term_page('employee_name_and_notes')
-
-        elif response == 'e':
-            self._clear_screen()
-            self.run_main_page()
 
     def _get_error_message_search_by_date_page(self, response, message_type):
         output = ''
@@ -322,7 +321,7 @@ class Program: # this is controller (from MVC architecture.)
 
         #8. bring data to display page
         if response == 'R':
-            self.run_search_page()
+            self.run_menu_page('search_page')
         else:
             self.run_display_page('search_page', items)
 
@@ -416,7 +415,7 @@ class Program: # this is controller (from MVC architecture.)
 
         #8. bring data to display page
         if response == 'R':
-            self.run_search_page()
+            self.run_menu_page('search_page')
         else:
             self.run_display_page('search_page', items)
 
@@ -485,7 +484,7 @@ class Program: # this is controller (from MVC architecture.)
 
         #9. bring data to display page
         if response == 'R':
-            self.run_search_page()
+            self.run_menu_page('search_page')
         else:
             self.run_display_page('search_page', items)
 
@@ -546,8 +545,8 @@ class Program: # this is controller (from MVC architecture.)
 
         if response == 'R':
             self._clear_screen()
-            self.run_search_page() if path == 'search_page' else self.run_main_page()
+            self.run_menu_page('search_page') if path == 'search_page' else self.run_menu_page('main')
 
 if __name__ == "__main__":
     program = Program()
-    program.run_main_page()
+    program.run_menu_page('main')
