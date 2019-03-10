@@ -175,6 +175,124 @@ class getEntriesBySearchTermEmployeeName(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+class TestGetEntriesByDate(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_searched_with_todays_date(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_date(self.today_date).count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_first_having_employee_name_hello_given_todays_date(self):
+        expected = 'Hello'
+
+        temp_list = self.model_service.get_entries_by_date(self.today_date)
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+
+class TestAddEntry(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_length_of_3_for_all_entries_stored_in_table(self):
+        expected = 3
+
+        result = self.model_service.get_all_entries().count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_in_order_added_entry_when_all_are_retrieved(self):
+        expected1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        expected2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        expected3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        temp = self.model_service.get_all_entries()
+        result1 = temp[0]
+        result2 = temp[1]
+        result3 = temp[2]
+
+        self.assertEqual(expected1['employee_name'], result1.employee_name)
+        self.assertEqual(expected1['time_amt'], result1.time_amt)
+        self.assertEqual(expected1['notes'], result1.notes)
+
+        self.assertEqual(expected2['employee_name'], result2.employee_name)
+        self.assertEqual(expected2['time_amt'], result2.time_amt)
+        self.assertEqual(expected2['notes'], result2.notes)
+
+        self.assertEqual(expected3['employee_name'], result3.employee_name)
+        self.assertEqual(expected3['time_amt'], result3.time_amt)
+        self.assertEqual(expected3['notes'], result3.notes)
+
+
+class TestGetPrompts(unittest.TestCase):
+    def setUp(self):
+        self.model_service = ModelService()
+
+    def test_return_items_with_length_of_3_when_called(self):
+        expected = 3
+
+        result = len(self.model_service.get_prompts())
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_items_in_list_when_called(self):
+        expected = [{'label': "Employee Name", 'model': 'employee_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+
+        result = self.model_service.get_prompts()
+
+        for index, item in enumerate(result):
+            self.assertEqual(item['label'], expected[index]['label'])
+            self.assertEqual(item['model'], expected[index]['model'])
+
 
 # --------
 # Main Page
