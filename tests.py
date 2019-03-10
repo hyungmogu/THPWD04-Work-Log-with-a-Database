@@ -1,10 +1,298 @@
 import unittest
+import peewee as p
+import datetime
 
 from main import Program
+from model_service import ModelService
+from models import Entries
 
 # --------
-# General
+# Model Serivce
 # --------
+
+
+class TestGetAllEntries(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'World2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'World3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_size_of_3_when_all_items_are_retrieved(self):
+        expected = 3
+
+        result = self.model_service.get_all_entries().count()
+
+        self.assertEqual(expected, result)
+
+
+class TestGetEntriesByTimeAmt(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'World2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'World3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_of_length_of_1_when_when_given_time_amt_of_30(self):
+        expected = 1
+
+        result = self.model_service.get_entries_by_time_amt(30).count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_employee_with_name_hello2_when_given_time_amt_of_30(self):
+        expected = 'Hello2'
+
+        temp_list = self.model_service.get_entries_by_time_amt(30)
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+
+class getEntriesBySearchTermEmployeeNameNotes(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_search_term('Hello', 'employee_name_and_notes').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_length_1_when_note_with_world_is_searched(self):
+        expected = 1
+
+        result = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_employee_name_hello_when_note_with_world_is_searched(self):
+        expected = 'Hello'
+
+        temp_list = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes')
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+class getEntriesBySearchTermEmployeeName(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_search_term('Hello', 'employee_name').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_length_1_when_employee_name_hello2_is_searched(self):
+        expected = 1
+
+        result = self.model_service.get_entries_by_search_term('Hello2', 'employee_name').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_time_amt_of_30_when_employee_name_hello2_is_searched(self):
+        expected = 30
+
+        temp_list = self.model_service.get_entries_by_search_term('Hello2', 'employee_name')
+        result = temp_list[0].time_amt
+
+        self.assertEqual(expected, result)
+
+class TestGetEntriesByDate(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_searched_with_todays_date(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_date(self.today_date).count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_first_having_employee_name_hello_given_todays_date(self):
+        expected = 'Hello'
+
+        temp_list = self.model_service.get_entries_by_date(self.today_date)
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+
+class TestAddEntry(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_length_of_3_for_all_entries_stored_in_table(self):
+        expected = 3
+
+        result = self.model_service.get_all_entries().count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_in_order_added_entry_when_all_are_retrieved(self):
+        expected1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        expected2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        expected3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        temp = self.model_service.get_all_entries()
+        result1 = temp[0]
+        result2 = temp[1]
+        result3 = temp[2]
+
+        self.assertEqual(expected1['employee_name'], result1.employee_name)
+        self.assertEqual(expected1['time_amt'], result1.time_amt)
+        self.assertEqual(expected1['notes'], result1.notes)
+
+        self.assertEqual(expected2['employee_name'], result2.employee_name)
+        self.assertEqual(expected2['time_amt'], result2.time_amt)
+        self.assertEqual(expected2['notes'], result2.notes)
+
+        self.assertEqual(expected3['employee_name'], result3.employee_name)
+        self.assertEqual(expected3['time_amt'], result3.time_amt)
+        self.assertEqual(expected3['notes'], result3.notes)
+
+
+class TestGetPrompts(unittest.TestCase):
+    def setUp(self):
+        self.model_service = ModelService()
+
+    def test_return_items_with_length_of_3_when_called(self):
+        expected = 3
+
+        result = len(self.model_service.get_prompts())
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_items_in_list_when_called(self):
+        expected = [{'label': "Employee Name", 'model': 'employee_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+
+        result = self.model_service.get_prompts()
+
+        for index, item in enumerate(result):
+            self.assertEqual(item['label'], expected[index]['label'])
+            self.assertEqual(item['model'], expected[index]['model'])
+
 
 # --------
 # Main Page
@@ -111,7 +399,7 @@ class TestIsResponseValidMainPage(unittest.TestCase):
 # --------
 # Add Page
 # --------
-class TestIsResponseValidAddPageTaskName(unittest.TestCase):
+class TestIsResponseValidAddPageEmployeeName(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('main')
@@ -120,8 +408,8 @@ class TestIsResponseValidAddPageTaskName(unittest.TestCase):
     def test_return_false_if_response_is_empty(self):
         expected = False
 
-        result1 = self.program._is_response_valid_add_page_task_name('')
-        result2 = self.program._is_response_valid_add_page_task_name('   ')
+        result1 = self.program._is_response_valid_add_page_employee_name('')
+        result2 = self.program._is_response_valid_add_page_employee_name('   ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -129,8 +417,8 @@ class TestIsResponseValidAddPageTaskName(unittest.TestCase):
     def test_return_true_if_not_empty(self):
         expected = True
 
-        result1 = self.program._is_response_valid_add_page_task_name('hello')
-        result2 = self.program._is_response_valid_add_page_task_name('*')
+        result1 = self.program._is_response_valid_add_page_employee_name('hello')
+        result2 = self.program._is_response_valid_add_page_employee_name('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -170,7 +458,7 @@ class TestIsResponseValidAddPageTimeAmt(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
+class TestGetErrorMessageAddPageEmployeeName(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('main')
@@ -179,8 +467,8 @@ class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
     def test_return_error_message_if_response_is_empty(self):
         expected = 'Please enter non-empty value'
 
-        result1 = self.program._get_error_message_add_page_task_name('')
-        result2 = self.program._get_error_message_add_page_task_name('     ')
+        result1 = self.program._get_error_message_add_page_employee_name('')
+        result2 = self.program._get_error_message_add_page_employee_name('     ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -188,8 +476,8 @@ class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
     def test_return_empty_if_otherwise(self):
         expected = ''
 
-        result1 = self.program._get_error_message_add_page_task_name('hello')
-        result2 = self.program._get_error_message_add_page_task_name('*')
+        result1 = self.program._get_error_message_add_page_employee_name('hello')
+        result2 = self.program._get_error_message_add_page_employee_name('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -563,8 +851,8 @@ class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_false_if_response_is_empty(self):
         expected = False
 
-        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('')
-        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('    ')
+        result1 = self.program._is_response_valid_search_by_search_term_page('')
+        result2 = self.program._is_response_valid_search_by_search_term_page('    ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -572,8 +860,8 @@ class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_true_if_response_not_empty(self):
         expected = True
 
-        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('hello')
-        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('*')
+        result1 = self.program._is_response_valid_search_by_search_term_page('hello')
+        result2 = self.program._is_response_valid_search_by_search_term_page('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -586,21 +874,21 @@ class TestGetErrorMessageSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_error_message_if_data_is_empty(self):
         expected = 'There are no data in database. Please return to main (R), and add an item.'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+        result = self.program._get_error_message_search_by_search_term_page('empty_data')
 
         self.assertEqual(expected, result)
 
     def test_return_error_message_if_response_is_not_valid(self):
         expected = 'Please enter non-empty characters or value (R)'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
+        result = self.program._get_error_message_search_by_search_term_page('not_valid_response')
 
         self.assertEqual(expected, result)
 
     def test_return_error_message_if_empty_results_are_returned(self):
         expected = 'Retrieved result is empty.'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_results')
+        result = self.program._get_error_message_search_by_search_term_page('empty_results')
 
         self.assertEqual(expected, result)
 
