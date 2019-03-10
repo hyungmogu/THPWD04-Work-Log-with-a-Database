@@ -216,6 +216,63 @@ class TestGetEntriesByDate(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+
+class TestAddEntry(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_length_of_3_for_all_entries_stored_in_table(self):
+        expected = 3
+
+        result = self.model_service.get_all_entries().count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_in_order_added_entry_when_all_are_retrieved(self):
+        expected1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        expected2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        expected3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        temp = self.model_service.get_all_entries()
+        result1 = temp[0]
+        result2 = temp[1]
+        result3 = temp[2]
+
+        self.assertEqual(expected1['employee_name'], result1.employee_name)
+        self.assertEqual(expected1['time_amt'], result1.time_amt)
+        self.assertEqual(expected1['notes'], result1.notes)
+
+        self.assertEqual(expected2['employee_name'], result2.employee_name)
+        self.assertEqual(expected2['time_amt'], result2.time_amt)
+        self.assertEqual(expected2['notes'], result2.notes)
+
+        self.assertEqual(expected3['employee_name'], result3.employee_name)
+        self.assertEqual(expected3['time_amt'], result3.time_amt)
+        self.assertEqual(expected3['notes'], result3.notes)
+
+
 # --------
 # Main Page
 # --------
