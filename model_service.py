@@ -7,7 +7,7 @@ from models import Entries
 
 class ModelService:
     menu_main = ["Add Entry", "Search Existing Entry", "Quit"]
-    menu_search_page = ["Find by Employee Name","Find By Date", "Find by Time Spent", "Find by Exact Search", "Find by Pattern", "Return to Main"]
+    menu_search_page = ["Find by Employee Name","Find By Date", "Find by Time Spent", "Find by Search Term", "Return to Main"]
 
     prompts_add_page = [{'label': "Employee Name", 'model': 'employee_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
 
@@ -68,7 +68,7 @@ class ModelService:
 
         for item in items:
             result_1 = re.search(r'{}'.format(regex), item.notes)
-            result_2 = re.search(r'{}'.format(regex), item.task_name)
+            result_2 = re.search(r'{}'.format(regex), item.employee_name)
 
             if result_1:
                 output.append(item)
@@ -78,8 +78,8 @@ class ModelService:
 
         return output
 
-    def get_entries_by_exact_words(self, words):
-        items_1 = Entries.select().where(Entries.task_name.contains(words))
+    def get_entries_by_search_term(self, words):
+        items_1 = Entries.select().where(Entries.employee_name.contains(words))
         items_2 = Entries.select().where(Entries.notes.contains(words))
         items = items_1 + items_2
 

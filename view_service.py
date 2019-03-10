@@ -67,14 +67,10 @@ class ViewService:
 
         self._get_error_message()
 
-    def get_search_by_regex_or_exact_words_page(self, search_type):
+    def get_search_by_search_term_page(self):
         self._get_header()
 
-        if search_type == 'exact_words':
-            print("Please enter exact string:\n")
-
-        if search_type == 'regex':
-            print("Please enter regex pattern:\n")
+        print("Please enter search term:\n")
 
         print("[R] Return to Search Page\n")
 
