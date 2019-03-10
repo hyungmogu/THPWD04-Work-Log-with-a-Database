@@ -41,6 +41,49 @@ class TestGetAllEntries(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+
+
+class TestGetEntriesByTimeAmt(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'World2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'World3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_of_length_of_1_when_when_given_time_amt_of_30(self):
+        expected = 1
+
+        result = self.model_service.get_entries_by_time_amt(30).count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_employee_with_name_hello2_when_given_time_amt_of_30(self):
+        expected = 'Hello2'
+
+        temp_list = self.model_service.get_entries_by_time_amt(30)
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+
+
 # --------
 # Main Page
 # --------
