@@ -84,7 +84,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
             self._quit()
 
-    def _is_response_valid_add_page_task_name(self,response):
+    def _is_response_valid_add_page_employee_name(self,response):
         # 1. Return false if response is empty
         if response.strip() == '':
             return False
@@ -103,7 +103,7 @@ class Program: # this is controller (from MVC architecture.)
 
         return True
 
-    def _get_error_message_add_page_task_name(self, response):
+    def _get_error_message_add_page_employee_name(self, response):
         output = ''
 
         if response.strip() == '':
@@ -138,11 +138,11 @@ class Program: # this is controller (from MVC architecture.)
                 else:
                     response = input("> ").strip().lower()
 
-                if prompt['label'] == 'Task Name' and not self._is_response_valid_add_page_task_name(response):
-                    self.view_service.error_message = self._get_error_message_add_page_task_name(response)
+                if prompt['model'] == 'employee_name' and not self._is_response_valid_add_page_employee_name(response):
+                    self.view_service.error_message = self._get_error_message_add_page_employee_name(response)
                     continue
 
-                if prompt['label'] == '# of Minutes' and not self._is_response_valid_add_page_time_amt(response):
+                if prompt['model'] == 'time_amt' and not self._is_response_valid_add_page_time_amt(response):
                     self.view_service.error_message = self._get_error_message_add_page_time_amt(response)
                     continue
 
@@ -219,10 +219,7 @@ class Program: # this is controller (from MVC architecture.)
             self.run_search_by_time_spent_page()
 
         elif response == 'c':
-            self.run_search_by_regex_or_exact_words_page('exact_words')
-
-        elif response == 'd':
-            self.run_search_by_regex_or_exact_words_page('regex')
+            self.run_search_by_search_term_page()
 
         elif response == 'e':
             self._clear_screen()
@@ -429,12 +426,12 @@ class Program: # this is controller (from MVC architecture.)
         else:
             self.run_display_page('search_page', items)
 
-    def _is_response_valid_search_by_regex_or_exact_words_page(self, response):
+    def _is_response_valid_search_by_search_term_page(self, response):
         if response.strip() == '':
             return False
         return True
 
-    def _get_error_message_search_by_regex_or_exact_words_page(self, error_type):
+    def _get_error_message_search_by_search_term_page(self, error_type):
         if error_type == 'empty_data':
             output = 'There are no data in database. Please return to main (R), and add an item.'
 
@@ -446,13 +443,13 @@ class Program: # this is controller (from MVC architecture.)
 
         return output
 
-    def run_search_by_regex_or_exact_words_page(self, search_type):
+    def run_search_by_search_term_page(self):
         self.view_service.page_title = 'Search Page'
         exit_page = False
         items = []
 
         if len(self.model_service.get_all_entries()) == 0:
-            self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+            self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
 
         while not exit_page:
 
@@ -460,7 +457,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
 
             #2. Load page
-            self.view_service.get_search_by_regex_or_exact_words_page(search_type)
+            self.view_service.get_search_by_search_term_page()
 
             #3. Load prompt
             if sys.version_info < (3, 0):
@@ -469,8 +466,8 @@ class Program: # this is controller (from MVC architecture.)
                 response = input("> ").strip()
 
             #4. if data not empty and response typed, check and see if typed value is correct
-            if not self._is_response_valid_search_by_regex_or_exact_words_page(response):
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
+            if not self._is_response_valid_search_by_search_term_page(response):
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('not_valid_response')
                 continue
 
             # 5. if response is 'R', then return to search page
@@ -480,18 +477,15 @@ class Program: # this is controller (from MVC architecture.)
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
             if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
                 continue
 
             # 7. Grab all results by exact string in task name or notes
-            if search_type == 'regex':
-                items = self.model_service.get_entries_by_regex (response)
-            elif search_type == 'exact_words':
-                items = self.model_service.get_entries_by_exact_words (response)
+            items = self.model_service.get_entries_by_search_term (response)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
             if len(items) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_regex_or_exact_words_page('empty_results')
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_results')
                 continue
 
             exit_page = True
