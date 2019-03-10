@@ -24,6 +24,16 @@ class Program: # this is controller (from MVC architecture.)
     def _get_all_entries(self):
         return self.model_service.get_all_entries()
 
+    def _get_response(self):
+        response = ''
+
+        if sys.version_info < (3, 0):
+            response = raw_input("> ").strip()
+        else:
+            response = input("> ").strip()
+
+        return response
+
     def _get_error_message_main_page(self, response, menu):
         error_message = ''
         # 1. if menu is empty, then set menu is empty error
@@ -61,10 +71,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
             self.view_service.get_main_page(menu)
 
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip().lower()
-            else:
-                response = input("> ").strip().lower()
+            response = self._get_response()
 
             if not self._is_response_valid_main_page(response, menu):
                 self.view_service.error_message = self._get_error_message_main_page(response, menu)
@@ -133,10 +140,7 @@ class Program: # this is controller (from MVC architecture.)
                 self._clear_screen()
                 self.view_service.get_add_page(prompt['label'])
 
-                if sys.version_info < (3, 0):
-                    response = raw_input("> ").strip().lower()
-                else:
-                    response = input("> ").strip().lower()
+                response = self._get_response()
 
                 if prompt['model'] == 'employee_name' and not self._is_response_valid_add_page_employee_name(response):
                     self.view_service.error_message = self._get_error_message_add_page_employee_name(response)
@@ -199,10 +203,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
             self.view_service.get_search_page(menu)
 
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip().lower()
-            else:
-                response = input("> ").strip().lower()
+            response = self._get_response()
 
             if not self._is_response_valid_search_page(response, menu):
                 self.view_service.error_message = self._get_error_message_search_page(response, menu)
@@ -293,10 +294,7 @@ class Program: # this is controller (from MVC architecture.)
             self.view_service.get_search_by_date_page()
 
             #3. Load prompt
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip()
-            else:
-                response = input("> ").strip()
+            response = self._get_response()
 
             #4. if data not empty and response typed, check and see if typed value is correct
             if not self._is_response_valid_search_by_date_page(response):
@@ -391,10 +389,7 @@ class Program: # this is controller (from MVC architecture.)
             self.view_service.get_search_by_time_spent_page()
 
             #3. Load prompt
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip()
-            else:
-                response = input("> ").strip()
+            response = self._get_response()
 
             #4. if data not empty and response typed, check and see if typed value is correct
             if not self._is_response_valid_search_by_time_page(response):
@@ -463,10 +458,7 @@ class Program: # this is controller (from MVC architecture.)
             self.view_service.get_search_by_search_term_page(search_type)
 
             #3. Load prompt
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip()
-            else:
-                response = input("> ").strip()
+            response = self._get_response()
 
             #4. if data not empty and response typed, check and see if typed value is correct
             if not self._is_response_valid_search_by_search_term_page(response):
@@ -533,10 +525,7 @@ class Program: # this is controller (from MVC architecture.)
 
             self.view_service.get_display_page(path, items, index)
 
-            if sys.version_info < (3, 0):
-                response = raw_input("> ").strip()
-            else:
-                response = input("> ").strip()
+            response = self._get_response()
 
             if not self._is_response_valid_display_page(response, path):
                 self.view_service.error_message = self._get_error_message_display_page(response, path)
