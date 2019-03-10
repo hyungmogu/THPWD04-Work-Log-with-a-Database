@@ -1,5 +1,6 @@
 import unittest
 import peewee as p
+import datetime
 
 from main import Program
 from model_service import ModelService
@@ -42,7 +43,6 @@ class TestGetAllEntries(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-
 class TestGetEntriesByTimeAmt(unittest.TestCase):
     def setUp(self):
         # 1. delete pre-existing database if it exists
@@ -82,51 +82,99 @@ class TestGetEntriesByTimeAmt(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
-    class getEntriesBySearchTermEmployeeName(unittest.TestCase):
-        def setUp(self):
-            # 1. delete pre-existing database if it exists
-            self.db = p.SqliteDatabase('workLog.db')
-            self.db.connect()
-            self.db.drop_tables([Entries])
 
-            # 2. register entries
-            self.model_service = ModelService()
+class getEntriesBySearchTermEmployeeNameNotes(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
 
-            prompts = self.model_service.prompts_add_page
+        # 2. register entries
+        self.model_service = ModelService()
 
-            input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-            input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-            input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        prompts = self.model_service.prompts_add_page
 
-            self.model_service.add_entry(prompts, input1)
-            self.model_service.add_entry(prompts, input2)
-            self.model_service.add_entry(prompts, input3)
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
 
-        def tearDown(self):
-            self.db.drop_tables([Entries])
-            self.db.close()
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
 
-        def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
-            expected = 3
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
 
-            result =  self.model_service.get_entries_by_search_term('Hello', 'employee_name').count()
+    def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
+        expected = 3
 
-            self.assertEqual(expected, result)
+        result = self.model_service.get_entries_by_search_term('Hello', 'employee_name_and_notes').count()
 
-        def test_return_result_with_length_1_when_employee_name_hello2_is_searched(self):
-            expected = 1
+        self.assertEqual(expected, result)
 
-            result = self.model_service.get_entries_by_search_term('Hello2', 'employee_name').count()
+    def test_return_result_with_length_1_when_note_with_world_is_searched(self):
+        expected = 1
 
-            self.assertEqual(expected, result)
+        result = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes').count()
 
-        def test_return_time_amt_of_30_when_employee_name_hello2_is_searched(self):
-            expected = 30
+        self.assertEqual(expected, result)
 
-            temp_list = self.model_service.get_entries_by_search_term('Hello2', 'employee_name')
-            result = temp_list[0].time_amt
+    def test_return_result_with_employee_name_hello_when_note_with_world_is_searched(self):
+        expected = 'Hello'
 
-            self.assertEqual(expected, result)
+        temp_list = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes')
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
+
+class getEntriesBySearchTermEmployeeName(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_search_term('Hello', 'employee_name').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_length_1_when_employee_name_hello2_is_searched(self):
+        expected = 1
+
+        result = self.model_service.get_entries_by_search_term('Hello2', 'employee_name').count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_time_amt_of_30_when_employee_name_hello2_is_searched(self):
+        expected = 30
+
+        temp_list = self.model_service.get_entries_by_search_term('Hello2', 'employee_name')
+        result = temp_list[0].time_amt
+
+        self.assertEqual(expected, result)
+
 
 # --------
 # Main Page
