@@ -3,7 +3,7 @@ import unittest
 from main import Program
 
 # --------
-# General
+# Model Serivce
 # --------
 
 # --------
@@ -111,7 +111,7 @@ class TestIsResponseValidMainPage(unittest.TestCase):
 # --------
 # Add Page
 # --------
-class TestIsResponseValidAddPageTaskName(unittest.TestCase):
+class TestIsResponseValidAddPageEmployeeName(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('main')
@@ -120,8 +120,8 @@ class TestIsResponseValidAddPageTaskName(unittest.TestCase):
     def test_return_false_if_response_is_empty(self):
         expected = False
 
-        result1 = self.program._is_response_valid_add_page_task_name('')
-        result2 = self.program._is_response_valid_add_page_task_name('   ')
+        result1 = self.program._is_response_valid_add_page_employee_name('')
+        result2 = self.program._is_response_valid_add_page_employee_name('   ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -129,8 +129,8 @@ class TestIsResponseValidAddPageTaskName(unittest.TestCase):
     def test_return_true_if_not_empty(self):
         expected = True
 
-        result1 = self.program._is_response_valid_add_page_task_name('hello')
-        result2 = self.program._is_response_valid_add_page_task_name('*')
+        result1 = self.program._is_response_valid_add_page_employee_name('hello')
+        result2 = self.program._is_response_valid_add_page_employee_name('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -170,7 +170,7 @@ class TestIsResponseValidAddPageTimeAmt(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
+class TestGetErrorMessageAddPageEmployeeName(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('main')
@@ -179,8 +179,8 @@ class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
     def test_return_error_message_if_response_is_empty(self):
         expected = 'Please enter non-empty value'
 
-        result1 = self.program._get_error_message_add_page_task_name('')
-        result2 = self.program._get_error_message_add_page_task_name('     ')
+        result1 = self.program._get_error_message_add_page_employee_name('')
+        result2 = self.program._get_error_message_add_page_employee_name('     ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -188,8 +188,8 @@ class TestGetErrorMessageAddPageTaskName(unittest.TestCase):
     def test_return_empty_if_otherwise(self):
         expected = ''
 
-        result1 = self.program._get_error_message_add_page_task_name('hello')
-        result2 = self.program._get_error_message_add_page_task_name('*')
+        result1 = self.program._get_error_message_add_page_employee_name('hello')
+        result2 = self.program._get_error_message_add_page_employee_name('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -563,8 +563,8 @@ class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_false_if_response_is_empty(self):
         expected = False
 
-        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('')
-        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('    ')
+        result1 = self.program._is_response_valid_search_by_search_term_page('')
+        result2 = self.program._is_response_valid_search_by_search_term_page('    ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -572,8 +572,8 @@ class TestIsResponseValidSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_true_if_response_not_empty(self):
         expected = True
 
-        result1 = self.program._is_response_valid_search_by_regex_or_exact_words_page('hello')
-        result2 = self.program._is_response_valid_search_by_regex_or_exact_words_page('*')
+        result1 = self.program._is_response_valid_search_by_search_term_page('hello')
+        result2 = self.program._is_response_valid_search_by_search_term_page('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -586,21 +586,21 @@ class TestGetErrorMessageSearchByRegexOrExactWordsPage(unittest.TestCase):
     def test_return_error_message_if_data_is_empty(self):
         expected = 'There are no data in database. Please return to main (R), and add an item.'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_data')
+        result = self.program._get_error_message_search_by_search_term_page('empty_data')
 
         self.assertEqual(expected, result)
 
     def test_return_error_message_if_response_is_not_valid(self):
         expected = 'Please enter non-empty characters or value (R)'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('not_valid_response')
+        result = self.program._get_error_message_search_by_search_term_page('not_valid_response')
 
         self.assertEqual(expected, result)
 
     def test_return_error_message_if_empty_results_are_returned(self):
         expected = 'Retrieved result is empty.'
 
-        result = self.program._get_error_message_search_by_regex_or_exact_words_page('empty_results')
+        result = self.program._get_error_message_search_by_search_term_page('empty_results')
 
         self.assertEqual(expected, result)
 
