@@ -301,7 +301,7 @@ class Program: # this is controller (from MVC architecture.)
                 self.view_service.error_message = self._get_error_message_search_by_date_page(response, 'not_valid_response')
                 continue
 
-            # By this point, the response should be in the format of dd-mm-yyyy or R
+            # By this point, the response should be in the format of yyyy-MM-dd or R
             # 5. if response is 'R', then return to search page
             if response == 'R':
                 exit_page = True
