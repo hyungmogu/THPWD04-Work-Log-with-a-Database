@@ -175,6 +175,46 @@ class getEntriesBySearchTermEmployeeName(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+class TestGetEntriesByDate(unittest.TestCase):
+    def setUp(self):
+        # 1. delete pre-existing database if it exists
+        self.db = p.SqliteDatabase('workLog.db')
+        self.db.connect()
+        self.db.drop_tables([Entries])
+
+        # 2. register entries
+        self.model_service = ModelService()
+
+        prompts = self.model_service.prompts_add_page
+
+        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+
+        self.model_service.add_entry(prompts, input1)
+        self.model_service.add_entry(prompts, input2)
+        self.model_service.add_entry(prompts, input3)
+
+        self.today_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    def tearDown(self):
+        self.db.drop_tables([Entries])
+        self.db.close()
+
+    def test_return_result_with_length_3_when_searched_with_todays_date(self):
+        expected = 3
+
+        result = self.model_service.get_entries_by_date(self.today_date).count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_result_with_first_having_employee_name_hello_given_todays_date(self):
+        expected = 'Hello'
+
+        temp_list = self.model_service.get_entries_by_date(self.today_date)
+        result = temp_list[0].employee_name
+
+        self.assertEqual(expected, result)
 
 # --------
 # Main Page
