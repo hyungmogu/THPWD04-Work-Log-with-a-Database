@@ -67,10 +67,13 @@ class ViewService:
 
         self._get_error_message()
 
-    def get_search_by_search_term_page(self):
+    def get_search_by_search_term_page(self, search_type):
         self._get_header()
 
-        print("Please enter search term:\n")
+        if search_type == 'employee_name':
+            print("Please enter employee name:\n")
+        else:
+            print("Please enter search term:\n")
 
         print("[R] Return to Search Page\n")
 

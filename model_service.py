@@ -78,10 +78,13 @@ class ModelService:
 
         return output
 
-    def get_entries_by_search_term(self, words):
-        items_1 = Entries.select().where(Entries.employee_name.contains(words))
-        items_2 = Entries.select().where(Entries.notes.contains(words))
-        items = items_1 + items_2
+    def get_entries_by_search_term(self, words, search_type):
+        if search_type == 'employee_name':
+            items = Entries.select().where(Entries.employee_name.contains(words))
+        else:
+            items_1 = Entries.select().where(Entries.employee_name.contains(words))
+            items_2 = Entries.select().where(Entries.notes.contains(words))
+            items = items_1 + items_2
 
         return items
 

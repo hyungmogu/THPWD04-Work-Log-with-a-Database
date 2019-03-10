@@ -213,13 +213,16 @@ class Program: # this is controller (from MVC architecture.)
         self.view_service.clear_error_message()
 
         if response == 'a':
-            self.run_search_by_date_page()
+            self.run_search_by_search_term_page('employee_name')
 
         elif response == 'b':
-            self.run_search_by_time_spent_page()
+            self.run_search_by_date_page()
 
         elif response == 'c':
-            self.run_search_by_search_term_page()
+            self.run_search_by_time_spent_page()
+
+        elif response == 'd':
+            self.run_search_by_search_term_page('employee_name_and_notes')
 
         elif response == 'e':
             self._clear_screen()
@@ -443,7 +446,7 @@ class Program: # this is controller (from MVC architecture.)
 
         return output
 
-    def run_search_by_search_term_page(self):
+    def run_search_by_search_term_page(self, search_type):
         self.view_service.page_title = 'Search Page'
         exit_page = False
         items = []
@@ -457,7 +460,7 @@ class Program: # this is controller (from MVC architecture.)
             self._clear_screen()
 
             #2. Load page
-            self.view_service.get_search_by_search_term_page()
+            self.view_service.get_search_by_search_term_page(search_type)
 
             #3. Load prompt
             if sys.version_info < (3, 0):
@@ -480,11 +483,11 @@ class Program: # this is controller (from MVC architecture.)
                 self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
                 continue
 
-            # 7. Grab all results by exact string in task name or notes
-            items = self.model_service.get_entries_by_search_term (response)
+            # 7. Grab all results by search term in either by employee name or both employee name and notes
+            items = self.model_service.get_entries_by_search_term(response, search_type)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
-            if len(items) == 0:
+            if items.count() == 0:
                 self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_results')
                 continue
 
