@@ -169,11 +169,7 @@ class Program: # this is controller (from MVC architecture.)
         if len(response) > 1 or len(response) == 0:
             return False
 
-        # 3. if response contains character of value less than ASCII value of 97 and greater than or equal to 97 + len(main_items), then return false
-        if ord(response) < 97 or ord(response) >= 97 + len(menu):
-            return False
-
-        # 4. otherwise, return true
+        # 3. otherwise, return true
         return True
 
     def _get_error_message_search_page(self, response, menu):
