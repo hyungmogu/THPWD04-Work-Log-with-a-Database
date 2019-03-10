@@ -45,7 +45,6 @@ class ModelService:
 
         return item
 
-
     def get_entries_by_date(self, date):
         # grab all dates of that date
         target_date_lb = datetime.datetime.strptime(date, '%Y-%m-%d')
@@ -57,26 +56,6 @@ class ModelService:
     def get_entries_by_time_amt(self, time_amt):
         items = Entries.select().where(Entries.time_amt == int(time_amt))
         return items
-
-    def get_entries_by_regex(self, regex):
-        output = []
-
-        items = Entries.select()
-
-        if len(items) == 0:
-            return output
-
-        for item in items:
-            result_1 = re.search(r'{}'.format(regex), item.notes)
-            result_2 = re.search(r'{}'.format(regex), item.employee_name)
-
-            if result_1:
-                output.append(item)
-
-            if result_2:
-                output.append(item)
-
-        return output
 
     def get_entries_by_search_term(self, words, search_type):
         if search_type == 'employee_name':
