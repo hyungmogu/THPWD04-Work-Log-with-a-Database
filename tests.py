@@ -709,6 +709,15 @@ class TestGetErrorMessageSearchByDatePage(unittest.TestCase):
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
 
+    def test_retrun_error_message_if_response_is_empty(self):
+        expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
+
+        result1 = self.program._get_error_message_search_by_date_page('','not_valid_response')
+        result2 = self.program._get_error_message_search_by_date_page('    ','not_valid_response')
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
     def test_return_error_message_if_response_not_a_date_and_not_single_character(self):
         expected = 'Please enter item in correct format (yyyy-mm-dd) or value (R)'
 
