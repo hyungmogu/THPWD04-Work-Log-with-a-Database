@@ -140,16 +140,16 @@ class Program: # this is controller (from MVC architecture.)
 
         elif page_type == 'search_page':
             if response == 'a':
-                self.run_search_by_search_term_page('employee_name')
+                self.run_search_by_page('employee_name')
 
             elif response == 'b':
-                self.run_search_by_date_page()
+                self.run_search_by_page('date')
 
             elif response == 'c':
-                self.run_search_by_time_spent_page()
+                self.run_search_by_page('time_spent')
 
             elif response == 'd':
-                self.run_search_by_search_term_page('employee_name_and_notes')
+                self.run_search_by_page('employee_name_and_notes')
 
             elif response == 'e':
                 self._clear_screen()
@@ -251,7 +251,7 @@ class Program: # this is controller (from MVC architecture.)
         return output
 
     def _is_response_valid_search_by_date_page(self, response):
-        #1. check if response is non-empty
+        #1. ck if response is non-empty
         if not response or len(response) == 0:
             return False
 
@@ -273,30 +273,54 @@ class Program: # this is controller (from MVC architecture.)
         else:
             return False
 
-    def run_search_by_date_page(self):
+    def run_search_by_page(self, search_type):
         self.view_service.page_title = 'Search Page'
         exit_page = False
         items = []
 
-        if len(self.model_service.get_all_entries()) == 0:
+        if search_type == 'date' and len(self.model_service.get_all_entries()) == 0:
             self.view_service.error_message = self._get_error_message_search_by_date_page('', 'empty_data')
+
+        elif search_type == 'time_spent' and len(self.model_service.get_all_entries()) == 0:
+            self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_data')
+
+        elif search_type == 'employee_name' and len(self.model_service.get_all_entries()) == 0:
+            self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
+
+        elif search_type == 'employee_name_and_notes' and len(self.model_service.get_all_entries()) == 0:
+            self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
 
         while not exit_page:
             # 1. Clear screen
             self._clear_screen()
 
             #2. Load page
-            self.view_service.get_search_by_date_page()
+            self.view_service.get_search_by_page(search_type)
 
             #3. Load prompt
             response = self._get_response()
 
             #4. if data not empty and response typed, check and see if typed value is correct
-            if not self._is_response_valid_search_by_date_page(response):
+            if search_type == 'date' and not self._is_response_valid_search_by_date_page(response):
                 self.view_service.error_message = self._get_error_message_search_by_date_page(response, 'not_valid_response')
                 continue
 
-            # By this point, the response should be in the format of yyyy-MM-dd or R
+            elif search_type == 'date' and not self._is_response_valid_search_by_search_term_page(response):
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('not_valid_response')
+                continue
+
+            elif search_type == 'time_spent' and not self._is_response_valid_search_by_time_page(response):
+                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('not_valid_response')
+                continue
+
+            elif search_type == 'employee_name' and not self._is_response_valid_search_by_search_term_page(response):
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('not_valid_response')
+                continue
+
+            elif search_type == 'employee_name_and_notes' and not self._is_response_valid_search_by_search_term_page(response):
+                self.view_service.error_message = self._get_error_message_search_by_search_term_page('not_valid_response')
+                continue
+
             # 5. if response is 'R', then return to search page
             if response == 'R':
                 exit_page = True
@@ -304,15 +328,20 @@ class Program: # this is controller (from MVC architecture.)
 
             #6. If data is empty, then raise error saying data is empty, so try again once it has been added
             if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_date_page('', 'empty_data')
+                self.view_service.error_message = 'There are no data in database. Please return to main (R), and add an item.'
                 continue
 
-            # 7. fetch result
-            items = self.model_service.get_entries_by_date(response)
+            # 7. Grab all results by search term in either by employee name or both employee name and notes
+            if search_type == 'date':
+                items = self.model_service.get_entries_by_date(response)
+            elif search_type == 'time_spent':
+                items = self.model_service.get_entries_by_time_amt(response)
+            elif search_type == 'employee_name' or search_type == 'employee_name_and_notes':
+                items = self.model_service.get_entries_by_search_term(response, search_type)
 
             # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
-            if len(items) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_date_page(response, 'empty_results')
+            if items.count() == 0:
+                self.view_service.error_message = 'Retrieved result is empty.'
                 continue
 
             exit_page = True
@@ -368,56 +397,6 @@ class Program: # this is controller (from MVC architecture.)
 
         return output
 
-    def run_search_by_time_spent_page(self):
-        self.view_service.page_title = 'Search Page'
-        exit_page = False
-        items = []
-
-        if len(self.model_service.get_all_entries()) == 0:
-            self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_data')
-
-        while not exit_page:
-            # 1. Clear screen
-            self._clear_screen()
-
-            #2. Load page
-            self.view_service.get_search_by_time_spent_page()
-
-            #3. Load prompt
-            response = self._get_response()
-
-            #4. if data not empty and response typed, check and see if typed value is correct
-            if not self._is_response_valid_search_by_time_page(response):
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('not_valid_response')
-                continue
-
-            # 5. if response is 'R', then return to search page
-            if response == 'R':
-                exit_page = True
-                continue
-
-            #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_data')
-                continue
-
-            # 7. fetch all results
-            items = self.model_service.get_entries_by_time_amt(response)
-
-            # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
-            if len(items) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_time_spent_page('empty_results')
-                continue
-
-            exit_page = True
-
-        self.view_service.clear_error_message()
-
-        #8. bring data to display page
-        if response == 'R':
-            self.run_menu_page('search_page')
-        else:
-            self.run_display_page('search_page', items)
 
     def _is_response_valid_search_by_search_term_page(self, response):
         if response.strip() == '':
@@ -435,58 +414,6 @@ class Program: # this is controller (from MVC architecture.)
             output = 'Retrieved result is empty.'
 
         return output
-
-    def run_search_by_search_term_page(self, search_type):
-        self.view_service.page_title = 'Search Page'
-        exit_page = False
-        items = []
-
-        if len(self.model_service.get_all_entries()) == 0:
-            self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
-
-        while not exit_page:
-
-            # 1. Clear screen
-            self._clear_screen()
-
-            #2. Load page
-            self.view_service.get_search_by_search_term_page(search_type)
-
-            #3. Load prompt
-            response = self._get_response()
-
-            #4. if data not empty and response typed, check and see if typed value is correct
-            if not self._is_response_valid_search_by_search_term_page(response):
-                self.view_service.error_message = self._get_error_message_search_by_search_term_page('not_valid_response')
-                continue
-
-            # 5. if response is 'R', then return to search page
-            if response == 'R':
-                exit_page = True
-                continue
-
-            #6. If data is empty, then raise error saying data is empty, so try again once it has been added
-            if len(self.model_service.get_all_entries()) == 0:
-                self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_data')
-                continue
-
-            # 7. Grab all results by search term in either by employee name or both employee name and notes
-            items = self.model_service.get_entries_by_search_term(response, search_type)
-
-            # 8. Once grabbed, check and see if it has length equal to zero. If so, then raise error saying nothing found
-            if items.count() == 0:
-                self.view_service.error_message = self._get_error_message_search_by_search_term_page('empty_results')
-                continue
-
-            exit_page = True
-
-        self.view_service.clear_error_message()
-
-        #9. bring data to display page
-        if response == 'R':
-            self.run_menu_page('search_page')
-        else:
-            self.run_display_page('search_page', items)
 
     def _is_response_valid_display_page(self, response, path):
         if path == 'search_page':

@@ -19,7 +19,7 @@ class ViewService:
 
         print("Please select an item from menu\n")
 
-        for index,item in enumerate(menu_items):
+        for index, item in enumerate(menu_items):
             if index != len(menu_items) - 1:
                 print("{0}. {1}".format(chr(index+97), item))
             else:
@@ -32,47 +32,33 @@ class ViewService:
 
         print("Please enter value to the following\n")
 
-        print ("{}:\n".format(prompt_phrase))
+        print("{}:\n".format(prompt_phrase))
 
         self._get_error_message()
 
     def get_search_page(self, menu_items):
         self._get_header()
 
-        print ("Please select one of the following options\n")
+        print("Please select one of the following options\n")
 
-        for index,item in enumerate(menu_items):
+        for index, item in enumerate(menu_items):
             if index != len(menu_items) - 1:
                 print("{0}. {1}".format(chr(index+97), item))
             else:
-                print("{0}. {1}\n".format(chr(index+97), item)) # this is to add extra space for prompt
+                print("{0}. {1}\n".format(chr(index+97), item))
 
         self._get_error_message()
 
-    def get_search_by_date_page(self):
+    def get_search_by_page(self, search_type):
         self._get_header()
 
-        print("Please enter full date (yyyy-MM-dd):\n")
-
-        print("[R] Return to Search Page\n")
-
-        self._get_error_message()
-
-    def get_search_by_time_spent_page(self):
-        self._get_header()
-
-        print("Please enter amount of time (Non-negative integer):\n")
-
-        print("[R] Return to Search Page\n")
-
-        self._get_error_message()
-
-    def get_search_by_search_term_page(self, search_type):
-        self._get_header()
-
-        if search_type == 'employee_name':
+        if search_type == 'date':
+            print("Please enter full date (yyyy-MM-dd):\n")
+        elif search_type == 'time_spent':
+            print("Please enter amount of time (Non-negative integer):\n")
+        elif search_type == 'employee_name':
             print("Please enter employee name:\n")
-        else:
+        elif search_type == 'employee_name_and_notes':
             print("Please enter search term:\n")
 
         print("[R] Return to Search Page\n")
