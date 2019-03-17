@@ -59,11 +59,10 @@ class ModelService:
         # grab all dates of that date
         target_date_lb = datetime.datetime.strptime(date, '%Y-%m-%d')
         target_date_ub = target_date_lb + datetime.timedelta(days=1)
-        query_cond = (
-            Entries.date >= target_date_lb and
-            Entries.date < target_date_ub)
 
-        items = Entries.select().where(query_cond)
+        items = Entries.select().where(
+            Entries.date >= target_date_lb,
+            Entries.date < target_date_ub)
 
         return items
 
