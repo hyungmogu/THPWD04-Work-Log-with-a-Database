@@ -76,10 +76,17 @@ class TestGetTitleSearchByPage(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
-    def test_return_correct_title_when_search_type_is_employee_name_and_notes(self):
+    def test_return_correct_title_when_search_type_is_task_name(self):
+        expected = "Please enter name of task:\n"
+
+        result = self.view_service._get_title_search_by_page('task_name')
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_title_when_search_type_is_task_name_and_notes(self):
         expected = "Please enter search term:\n"
 
-        result = self.view_service._get_title_search_by_page('employee_name_and_notes')
+        result = self.view_service._get_title_search_by_page('task_name_and_notes')
 
         self.assertEqual(expected, result)
 
@@ -100,9 +107,9 @@ class TestGetAllEntries(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'World2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'World3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'World2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'World3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -132,9 +139,9 @@ class TestGetEntriesByTimeAmt(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'World2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'World3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -160,7 +167,7 @@ class TestGetEntriesByTimeAmt(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-class getEntriesBySearchTermEmployeeNameNotes(unittest.TestCase):
+class getEntriesBySearchTermTaskNameNotes(unittest.TestCase):
     def setUp(self):
         # 1. delete pre-existing database if it exists
         self.db = p.SqliteDatabase('workLog.db')
@@ -172,9 +179,9 @@ class getEntriesBySearchTermEmployeeNameNotes(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -184,27 +191,28 @@ class getEntriesBySearchTermEmployeeNameNotes(unittest.TestCase):
         self.db.drop_tables([Entries])
         self.db.close()
 
-    def test_return_result_with_length_3_when_given_employee_name_of_hello(self):
+    def test_return_result_with_length_3_when_given_task_name_of_hi(self):
         expected = 3
 
-        result = self.model_service.get_entries_by_search_term('Hello', 'employee_name_and_notes').count()
+        result = self.model_service.get_entries_by_search_term('Hi', 'task_name_and_notes').count()
 
         self.assertEqual(expected, result)
 
     def test_return_result_with_length_1_when_note_with_world_is_searched(self):
         expected = 1
 
-        result = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes').count()
+        result = self.model_service.get_entries_by_search_term('World', 'task_name_and_notes').count()
 
         self.assertEqual(expected, result)
 
-    def test_return_result_with_employee_name_hello_when_note_with_world_is_searched(self):
+    def test_return_result_with_task_name_hi_when_note_with_world_is_searched(self):
         expected = 'Hello'
 
-        temp_list = self.model_service.get_entries_by_search_term('World', 'employee_name_and_notes')
+        temp_list = self.model_service.get_entries_by_search_term('World', 'task_name_and_notes')
         result = temp_list[0].employee_name
 
         self.assertEqual(expected, result)
+
 
 class getEntriesBySearchTermEmployeeName(unittest.TestCase):
     def setUp(self):
@@ -218,9 +226,9 @@ class getEntriesBySearchTermEmployeeName(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -252,6 +260,7 @@ class getEntriesBySearchTermEmployeeName(unittest.TestCase):
 
         self.assertEqual(expected, result)
 
+
 class TestGetEntriesByDate(unittest.TestCase):
     def setUp(self):
         # 1. delete pre-existing database if it exists
@@ -264,9 +273,9 @@ class TestGetEntriesByDate(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -306,9 +315,9 @@ class TestAddEntry(unittest.TestCase):
 
         prompts = self.model_service.prompts_add_page
 
-        input1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        input2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-        input3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        input1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        input2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        input3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         self.model_service.add_entry(prompts, input1)
         self.model_service.add_entry(prompts, input2)
@@ -328,9 +337,9 @@ class TestAddEntry(unittest.TestCase):
         self.assertEqual(expected, result)
 
     def test_return_result_in_order_added_entry_when_all_are_retrieved(self):
-        expected1 = {'employee_name': 'Hello', 'time_amt': 20, 'notes': 'World'}
-        expected2 = {'employee_name': 'Hello2', 'time_amt': 30, 'notes': 'Star2'}
-        expected3 = {'employee_name': 'Hello3', 'time_amt': 40, 'notes': 'Class3'}
+        expected1 = {'employee_name': 'Hello', 'task_name': 'Hi1', 'time_amt': 20, 'notes': 'World'}
+        expected2 = {'employee_name': 'Hello2', 'task_name': 'Hi2', 'time_amt': 30, 'notes': 'Star2'}
+        expected3 = {'employee_name': 'Hello3', 'task_name': 'Hi3', 'time_amt': 40, 'notes': 'Class3'}
 
         temp = self.model_service.get_all_entries()
         result1 = temp[0]
@@ -354,15 +363,19 @@ class TestGetPrompts(unittest.TestCase):
     def setUp(self):
         self.model_service = ModelService()
 
-    def test_return_items_with_length_of_3_when_called(self):
-        expected = 3
+    def test_return_items_with_length_of_4_when_called(self):
+        expected = 4
 
         result = len(self.model_service.get_prompts())
 
         self.assertEqual(expected, result)
 
     def test_return_correct_items_in_list_when_called(self):
-        expected = [{'label': "Employee Name", 'model': 'employee_name'}, {'label': "# of Minutes", 'model': 'time_amt'}, {'label':"Additional Notes", 'model': 'notes'}]
+        expected = [
+            {"label": "Employee Name", "model": "employee_name"},
+            {"label": "Task Name", "model": "task_name"},
+            {"label": "# of Minutes", "model": "time_amt"},
+            {"label": "Additional Notes", "model": "notes"}]
 
         result = self.model_service.get_prompts()
 
@@ -374,6 +387,26 @@ class TestGetPrompts(unittest.TestCase):
 # --------
 # Main Page
 # --------
+
+class TestGetPageTitle(unittest.TestCase):
+    def setUp(self):
+        self.program = Program()
+
+    def test_return_main_page_if_page_type_is_main(self):
+        expected = 'Main Page'
+
+        result = self.program._get_page_title('main')
+
+        self.assertEqual(expected, result)
+
+    def test_return_search_page_if_page_type_is_main(self):
+        expected = 'Search Page'
+
+        result = self.program._get_page_title('search_page')
+
+        self.assertEqual(expected, result)
+
+
 class TestGetErrMsgMainPage(unittest.TestCase):
     def setUp(self):
         self.program = Program()
@@ -488,8 +521,8 @@ class TestIsResValidAddPageEmployeeName(unittest.TestCase):
     def test_return_false_if_response_is_empty(self):
         expected = False
 
-        result1 = self.program._is_res_valid_add_page_employee_name('')
-        result2 = self.program._is_res_valid_add_page_employee_name('   ')
+        result1 = self.program._is_res_valid_add_page_names('')
+        result2 = self.program._is_res_valid_add_page_names('   ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -497,8 +530,8 @@ class TestIsResValidAddPageEmployeeName(unittest.TestCase):
     def test_return_true_if_not_empty(self):
         expected = True
 
-        result1 = self.program._is_res_valid_add_page_employee_name('hello')
-        result2 = self.program._is_res_valid_add_page_employee_name('*')
+        result1 = self.program._is_res_valid_add_page_names('hello')
+        result2 = self.program._is_res_valid_add_page_names('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -539,7 +572,7 @@ class TestIsResValidAddPageTimeAmt(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
-class TestGetErrMsgAddPageEmployeeName(unittest.TestCase):
+class TestGetErrMsgAddPageNames(unittest.TestCase):
     def setUp(self):
         self.program = Program()
         self.menu = self.program.model_service.get_menu('main')
@@ -548,8 +581,8 @@ class TestGetErrMsgAddPageEmployeeName(unittest.TestCase):
     def test_return_error_message_if_response_is_empty(self):
         expected = 'Please enter non-empty value'
 
-        result1 = self.program._get_err_msg_add_page_employee_name('')
-        result2 = self.program._get_err_msg_add_page_employee_name('     ')
+        result1 = self.program._get_err_msg_add_page_names('')
+        result2 = self.program._get_err_msg_add_page_names('     ')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -557,8 +590,8 @@ class TestGetErrMsgAddPageEmployeeName(unittest.TestCase):
     def test_return_empty_if_otherwise(self):
         expected = ''
 
-        result1 = self.program._get_err_msg_add_page_employee_name('hello')
-        result2 = self.program._get_err_msg_add_page_employee_name('*')
+        result1 = self.program._get_err_msg_add_page_names('hello')
+        result2 = self.program._get_err_msg_add_page_names('*')
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -644,7 +677,7 @@ class TestIsResValidSearchPage(unittest.TestCase):
         expected = False
 
         result1 = self.program._is_res_valid_main_page('z', self.menu)
-        result2 = self.program._is_res_valid_main_page('f', self.menu)
+        result2 = self.program._is_res_valid_main_page('g', self.menu)
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)
@@ -706,7 +739,7 @@ class TestGetErrMsgSearchPage(unittest.TestCase):
         expected = "Please enter correct value ({}-{})".format(chr(97), chr(97 + len(self.menu) - 1))
 
         result1 = self.program._get_err_msg_search_page('z', self.menu)
-        result2 = self.program._get_err_msg_search_page('f', self.menu)
+        result2 = self.program._get_err_msg_search_page('g', self.menu)
 
         self.assertEqual(expected, result1)
         self.assertEqual(expected, result2)

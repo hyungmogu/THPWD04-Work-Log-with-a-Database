@@ -15,8 +15,7 @@ class Program:  # this is controller (from MVC architecture.)
         self.model_service = ModelService()
 
     def _clear_screen(self):
-        os.system('cls')  # For Windows
-        os.system('clear')  # For Linux/OS X
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     def _quit(self):
         print("Thank You and Take Care")
@@ -162,12 +161,14 @@ class Program:  # this is controller (from MVC architecture.)
             elif response == 'c':
                 self.run_search_by_page('time_spent')
             elif response == 'd':
-                self.run_search_by_page('employee_name_and_notes')
+                self.run_search_by_page('task_name_and_notes')
             elif response == 'e':
                 self._clear_screen()
                 self.run_menu_page('main')
+            else:
+                self.run_menu_page(page_type)
 
-    def _is_res_valid_add_page_employee_name(self, response):
+    def _is_res_valid_add_page_names(self, response):
         # 1. Return false if response is empty
         if response.strip() == '':
             return False
@@ -186,7 +187,7 @@ class Program:  # this is controller (from MVC architecture.)
 
         return True
 
-    def _get_err_msg_add_page_employee_name(self, response):
+    def _get_err_msg_add_page_names(self, response):
         output = ''
 
         if response.strip() == '':
@@ -218,13 +219,13 @@ class Program:  # this is controller (from MVC architecture.)
 
                 res = self._get_response()
 
-                if (prompt['model'] == 'employee_name' and
-                        not self._is_res_valid_add_page_employee_name(res)):
+                if ((prompt['model'] == 'employee_name' or
+                    prompt['model'] == 'task_name') and
+                        not self._is_res_valid_add_page_names(res)):
                     self.view_service.error_message = (
-                        self._get_err_msg_add_page_employee_name(res))
+                        self._get_err_msg_add_page_names(res))
                     continue
-
-                if (prompt['model'] == 'time_amt' and
+                elif (prompt['model'] == 'time_amt' and
                         not self._is_res_valid_add_page_time_amt(res)):
                     self.view_service.error_message = (
                             self._get_err_msg_add_page_time_amt(res))
@@ -319,11 +320,8 @@ class Program:  # this is controller (from MVC architecture.)
                 len(self.model_service.get_all_entries()) == 0):
             self.view_service.error_message = (
                 self._get_err_msg_search_by_time_spent_page('empty_data'))
-        elif (search_type == 'employee_name' and
-                len(self.model_service.get_all_entries()) == 0):
-            self.view_service.error_message = (
-                self._get_err_msg_search_by_search_term_page('empty_data'))
-        elif (search_type == 'employee_name_and_notes' and
+        elif ((search_type == 'employee_name' or
+               search_type == 'task_name_and_notes') and
                 len(self.model_service.get_all_entries()) == 0):
             self.view_service.error_message = (
                 self._get_err_msg_search_by_search_term_page('empty_data'))
@@ -355,12 +353,8 @@ class Program:  # this is controller (from MVC architecture.)
                 self.view_service.error_message = (
                     self._get_err_msg_search_by_time_spent_page('not_valid'))
                 continue
-            elif (search_type == 'employee_name' and
-                    not self._is_res_valid_search_by_search_term_page(res)):
-                self.view_service.error_message = (
-                    self._get_err_msg_search_by_search_term_page('not_valid'))
-                continue
-            elif (search_type == 'employee_name_and_notes' and
+            elif ((search_type == 'employee_name' or
+                    search_type == 'task_name_and_notes') and
                     not self._is_res_valid_search_by_search_term_page(res)):
                 self.view_service.error_message = (
                     self._get_err_msg_search_by_search_term_page('not_valid'))
@@ -386,7 +380,7 @@ class Program:  # this is controller (from MVC architecture.)
             elif search_type == 'time_spent':
                 items = self.model_service.get_entries_by_time_amt(res)
             elif (search_type == 'employee_name' or
-                  search_type == 'employee_name_and_notes'):
+                  search_type == 'task_name_and_notes'):
                 items = (
                     self.model_service.
                     get_entries_by_search_term(res, search_type))

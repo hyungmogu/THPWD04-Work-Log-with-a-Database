@@ -14,12 +14,13 @@ class ModelService:
         "Find by Search Term", "Return to Main"]
 
     prompts_add_page = [
-        {'label': "Employee Name", 'model': 'employee_name'},
-        {'label': "# of Minutes", 'model': 'time_amt'},
-        {'label': "Additional Notes", 'model': 'notes'}]
+        {"label": "Employee Name", "model": "employee_name"},
+        {"label": "Task Name", "model": "task_name"},
+        {"label": "# of Minutes", "model": "time_amt"},
+        {"label": "Additional Notes", "model": "notes"}]
 
     def __init__(self, Entries=Entries):
-        self.db = p.SqliteDatabase('workLog.db')
+        self.db = p.SqliteDatabase("workLog.db")
         self.db.connect()
         self.db.create_tables([Entries], safe=True)
 
@@ -29,8 +30,8 @@ class ModelService:
     def get_menu(self, name):
         output = []
 
-        if hasattr(self, 'menu_{}'.format(name)):
-            output = getattr(self, 'menu_{}'.format(name))
+        if hasattr(self, "menu_{}".format(name)):
+            output = getattr(self, "menu_{}".format(name))
 
         return output
 
@@ -46,10 +47,10 @@ class ModelService:
         entry = {}
 
         for prompt in prompts:
-            if prompt['model'] in output:
-                entry[prompt['model']] = output[prompt['model']]
+            if prompt["model"] in output:
+                entry[prompt["model"]] = output[prompt["model"]]
             else:
-                entry[prompt['model']] = ''
+                entry[prompt["model"]] = ""
 
         item = Entries.create(**entry)
 
@@ -57,7 +58,7 @@ class ModelService:
 
     def get_entries_by_date(self, date):
         # grab all dates of that date
-        target_date_lb = datetime.datetime.strptime(date, '%Y-%m-%d')
+        target_date_lb = datetime.datetime.strptime(date, "%Y-%m-%d")
         target_date_ub = target_date_lb + datetime.timedelta(days=1)
 
         items = Entries.select().where(
@@ -70,13 +71,13 @@ class ModelService:
         items = Entries.select().where(Entries.time_amt == int(time_amt))
         return items
 
-    def get_entries_by_search_term(self, words, search_type):
-        if search_type == 'employee_name':
-            query_cond = Entries.employee_name.contains(words)
+    def get_entries_by_search_term(self, query, search_type):
+        if search_type == "employee_name":
+            query_cond = Entries.employee_name.contains(query)
             items = Entries.select().where(query_cond)
-        else:
-            query_cond1 = Entries.employee_name.contains(words)
-            query_cond2 = Entries.notes.contains(words)
+        elif search_type == "task_name_and_notes":
+            query_cond1 = Entries.task_name.contains(query)
+            query_cond2 = Entries.notes.contains(query)
 
             items_1 = Entries.select().where(query_cond1)
             items_2 = Entries.select().where(query_cond2)

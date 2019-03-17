@@ -44,11 +44,13 @@ class ViewService:
 
         if search_type == 'date':
             output = "Please enter full date (yyyy-MM-dd):\n"
+        elif search_type == 'task_name':
+            output = "Please enter name of task:\n"
         elif search_type == 'time_spent':
             output = "Please enter amount of time (Non-negative integer):\n"
         elif search_type == 'employee_name':
             output = "Please enter employee name:\n"
-        elif search_type == 'employee_name_and_notes':
+        elif search_type == 'task_name_and_notes':
             output = "Please enter search term:\n"
 
         return output
@@ -88,6 +90,7 @@ class ViewService:
         item = items[index]
 
         print("Employee Name: {}".format(item.employee_name))
+        print("Task Name: {}".format(item.task_name))
         print("Created Date: {}".format(item.date.strftime('%Y-%m-%d')))
         print("Time Spent: {}".format(item.time_amt))
         print("Notes: {}\n".format(item.notes))
