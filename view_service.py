@@ -82,7 +82,9 @@ class ViewService:
             elif index == 0:
                 print("[N] Next Item [R] Return to Search Page\n")
             elif index > 0 and index < len(items) - 1:
-                print("[N] Next Item [P] Previous Item [R] Return to Search Page\n")
+                print(
+                    "[N] Next Item [P] Previous Item [R] Return to "
+                    "Search Page\n")
             else:
                 print("[P] Previous Item [R] Return to Search Page\n")
         else:
