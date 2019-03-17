@@ -4,7 +4,84 @@ import datetime
 
 from main import Program
 from model_service import ModelService
+from view_service import ViewService
 from models import Entries
+
+# --------
+# View Serivce
+# --------
+
+
+class TestGetOptionsDisplayPage(unittest.TestCase):
+    def setUp(self):
+        self.view_service = ViewService()
+
+        self.items1 = ['test1', 'test2', 'test3']
+        self.items2 = ['test1']
+
+    def test_return_correct_options_when_exists_one_item_and_from_search_page(self):
+        expected = "[R] Return to Search Page\n"
+
+        result = self.view_service._get_options_display_page('search_page', self.items2, 2)
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_options_when_exists_more_than_one_item_and_at_0_index_from_search_page(self):
+        expected = "[N] Next Item [R] Return to Search Page\n"
+
+        result = self.view_service._get_options_display_page('search_page', self.items1, 0)
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_options_when_exists_more_than_one_item_and_at_non_zero_index_from_search_page(self):
+        expected = "[N] Next Item [P] Previous Item [R] Return to Search Page\n"
+
+        result = self.view_service._get_options_display_page('search_page', self.items1, 1)
+
+    def test_return_correct_options_when_exists_more_than_one_item_and_at_last_index_from_search_page(self):
+        expected = "[P] Previous Item [R] Return to Search Page\n"
+
+        result = self.view_service._get_options_display_page('search_page', self.items1, 2)
+
+    def test_return_correct_options_when_from_add_page(self):
+        expected = "[R] Return to Main Page\n"
+
+        result = self.view_service._get_options_display_page('add_page', self.items1, 2)
+
+        self.assertEqual(expected, result)
+
+
+class TestGetTitleSearchByPage(unittest.TestCase):
+    def setUp(self):
+        self.view_service = ViewService()
+
+    def test_return_correct_title_when_search_type_is_date(self):
+        expected = "Please enter full date (yyyy-MM-dd):\n"
+
+        result = self.view_service._get_title_search_by_page('date')
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_title_when_search_type_is_time_spent(self):
+        expected = "Please enter amount of time (Non-negative integer):\n"
+
+        result = self.view_service._get_title_search_by_page('time_spent')
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_title_when_search_type_is_employee_name(self):
+        expected = "Please enter employee name:\n"
+
+        result = self.view_service._get_title_search_by_page('employee_name')
+
+        self.assertEqual(expected, result)
+
+    def test_return_correct_title_when_search_type_is_employee_name_and_notes(self):
+        expected = "Please enter search term:\n"
+
+        result = self.view_service._get_title_search_by_page('employee_name_and_notes')
+
+        self.assertEqual(expected, result)
 
 # --------
 # Model Serivce
